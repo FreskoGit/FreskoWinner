@@ -9,17 +9,24 @@
     <style>
         /* ==================== CSS VARIABLES ==================== */
         :root {
-            --color-primary-bg: #000000;
-            --color-surface: #1E1E1E;
+            --tg-bg-color: var(--tg-theme-bg-color, #000000);
+            --tg-text-color: var(--tg-theme-text-color, #FFFFFF);
+            --tg-hint-color: var(--tg-theme-hint-color, #8E8E93);
+            --tg-link-color: var(--tg-theme-link-color, #007AFF);
+            --tg-button-color: var(--tg-theme-button-color, #007AFF);
+            --tg-button-text-color: var(--tg-theme-button-text-color, #FFFFFF);
+            --tg-secondary-bg-color: var(--tg-theme-secondary-bg-color, #1E1E1E);
+            
+            --color-primary-bg: var(--tg-bg-color, #000000);
+            --color-surface: var(--tg-secondary-bg-color, #1E1E1E);
             --color-surface-lighter: #2D2D2D;
-            --color-accent-primary: #007AFF;
+            --color-accent-primary: var(--tg-button-color, #007AFF);
             --color-accent-hover: #0056CC;
-            --color-text-primary: #FFFFFF;
-            --color-text-secondary: #8E8E93;
-            --color-text-on-accent: #FFFFFF;
+            --color-text-primary: var(--tg-text-color, #FFFFFF);
+            --color-text-secondary: var(--tg-hint-color, #8E8E93);
+            --color-text-on-accent: var(--tg-button-text-color, #FFFFFF);
             --color-border: #3A3A3C;
-            --color-border-active: #007AFF;
-            --color-shadow: rgba(0, 0, 0, 0.5);
+            --color-border-active: var(--tg-link-color, #007AFF);
             --color-success: #34C759;
             --color-error: #FF3B30;
             --color-warning: #FF9500;
@@ -30,14 +37,14 @@
             --font-size-caption: 14px;
             --font-size-small: 12px;
             
-            --radius-small: 8px;
-            --radius-medium: 12px;
+            --radius-small: 10px;
+            --radius-medium: 15px;
             --radius-large: 20px;
             --radius-circle: 50%;
             
-            --shadow-modal: 0 -4px 20px var(--color-shadow);
+            --shadow-modal: 0 -4px 20px rgba(0, 0, 0, 0.5);
             --shadow-button: 0 4px 12px rgba(0, 122, 255, 0.3);
-            --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.15);
             
             --transition-fast: 150ms ease-in-out;
             --transition-medium: 250ms ease-in-out;
@@ -49,6 +56,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -69,19 +77,23 @@
             font-family: inherit;
             cursor: pointer;
             padding: 0;
+            touch-action: manipulation;
         }
         
         input {
             font-family: inherit;
             color: inherit;
+            font-size: 16px; /* Предотвращает увеличение в iOS */
         }
         
-        .container {
+        .screen {
             flex: 1;
             overflow-y: auto;
             padding-bottom: 80px;
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
         }
         
         .hidden {
@@ -94,6 +106,11 @@
         }
         
         /* ==================== АНИМАЦИИ ==================== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
         @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
@@ -102,11 +119,6 @@
         @keyframes slideDown {
             from { transform: translateY(0); }
             to { transform: translateY(100%); }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
         
         @keyframes bounce {
@@ -120,25 +132,26 @@
             100% { transform: scale(1); }
         }
         
-        @keyframes scaleDown {
-            to { transform: scale(0.98); }
-        }
-        
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
         
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: 200px 0; }
+        }
+        
         /* ==================== ШАПКА ==================== */
         .header {
-            padding: 12px 16px;
+            padding: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
-            background-color: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
+            background-color: var(--color-primary-bg);
+            backdrop-filter: blur(20px);
             z-index: 100;
             border-bottom: 1px solid var(--color-border);
         }
@@ -146,25 +159,26 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
         
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: var(--radius-circle);
             border: 2px solid var(--color-accent-primary);
             overflow: hidden;
-            background-color: var(--color-surface);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
         
         .avatar img {
@@ -175,7 +189,7 @@
         
         .avatar i {
             font-size: 20px;
-            color: var(--color-text-secondary);
+            color: white;
         }
         
         .username {
@@ -190,7 +204,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
         
         .balance {
@@ -198,15 +212,18 @@
             align-items: center;
             gap: 8px;
             background-color: var(--color-surface);
-            padding: 8px 12px;
+            padding: 10px 16px;
             border-radius: var(--radius-medium);
             font-size: var(--font-size-caption);
+            font-weight: 600;
+            border: 1px solid var(--color-border);
             min-width: 100px;
-            justify-content: center;
         }
         
         .balance.loading {
-            opacity: 0.5;
+            background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-lighter) 50%, var(--color-surface) 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
         }
         
         .balance-icon {
@@ -226,17 +243,22 @@
         }
         
         .add-balance {
-            width: 32px;
-            height: 32px;
+            width: 44px;
+            height: 44px;
             border-radius: var(--radius-circle);
-            background-color: var(--color-accent-primary);
+            background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-hover) 100%);
             color: var(--color-text-on-accent);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
             transition: transform var(--transition-fast);
+            box-shadow: var(--shadow-button);
+        }
+        
+        .add-balance:active {
+            transform: scale(0.95);
         }
         
         /* ==================== ПОИСК ==================== */
@@ -246,19 +268,21 @@
         
         .search-box {
             width: 100%;
-            height: 48px;
+            height: 52px;
             background-color: var(--color-surface);
             border-radius: var(--radius-medium);
-            padding: 0 16px;
+            padding: 0 20px;
             display: flex;
             align-items: center;
             gap: 12px;
-            border: 1px solid transparent;
-            transition: border-color var(--transition-fast);
+            border: 1px solid var(--color-border);
+            transition: all var(--transition-fast);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .search-box:focus-within {
-            border-color: var(--color-border-active);
+            border-color: var(--color-accent-primary);
+            box-shadow: 0 4px 16px rgba(0, 122, 255, 0.15);
         }
         
         .search-box i {
@@ -273,17 +297,19 @@
             outline: none;
             font-size: var(--font-size-body);
             color: var(--color-text-primary);
+            height: 100%;
         }
         
         .search-input::placeholder {
             color: var(--color-text-secondary);
+            opacity: 0.7;
         }
         
         /* ==================== ФИЛЬТРЫ ==================== */
         .filters-container {
-            padding: 0 16px 12px;
+            padding: 0 16px 16px;
             display: flex;
-            gap: 12px;
+            gap: 8px;
             overflow-x: auto;
             scrollbar-width: none;
         }
@@ -293,118 +319,98 @@
         }
         
         .filter-btn {
-            padding: 10px 16px;
+            padding: 12px 20px;
             background-color: var(--color-surface);
             border-radius: var(--radius-medium);
             font-size: var(--font-size-caption);
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 8px;
             white-space: nowrap;
-            transition: background-color var(--transition-fast);
-            border: 1px solid transparent;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--color-border);
         }
         
         .filter-btn:active {
-            animation: scaleDown 0.1s forwards;
-        }
-        
-        .filter-btn:hover {
-            background-color: var(--color-surface-lighter);
+            transform: scale(0.98);
         }
         
         .filter-btn.active {
+            background-color: var(--color-accent-primary);
+            color: var(--color-text-on-accent);
             border-color: var(--color-accent-primary);
-            background-color: rgba(0, 122, 255, 0.1);
         }
         
         .filter-btn i {
             font-size: 14px;
         }
         
-        /* ==================== ПЕРЕКЛЮЧАТЕЛЬ ==================== */
-        .toggle-container {
-            padding: 0 16px 20px;
-            display: flex;
-            border-bottom: 1px solid var(--color-border);
-            margin-bottom: 16px;
-        }
-        
-        .toggle-btn {
-            flex: 1;
-            text-align: center;
-            padding: 12px 0;
-            font-size: var(--font-size-body);
-            color: var(--color-text-secondary);
-            position: relative;
-            transition: color var(--transition-medium);
-        }
-        
-        .toggle-btn.active {
-            color: var(--color-text-primary);
-            font-weight: 600;
-        }
-        
-        .toggle-indicator {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--color-accent-primary);
-            transform: scaleX(0);
-            transition: transform var(--transition-medium);
-        }
-        
-        .toggle-btn.active .toggle-indicator {
-            transform: scaleX(1);
-        }
-        
         /* ==================== СЕТКА NFT ==================== */
+        .nft-grid-container {
+            flex: 1;
+            padding: 0 16px 20px;
+            overflow-y: auto;
+        }
+        
         .nft-grid {
-            padding: 0 16px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .nft-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         
         .loading-state {
             grid-column: 1 / -1;
             text-align: center;
             color: var(--color-text-secondary);
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
         
         .loading-state i {
             font-size: 48px;
             margin-bottom: 20px;
             animation: spin 1s linear infinite;
+            color: var(--color-accent-primary);
+        }
+        
+        .loading-state div {
+            font-size: var(--font-size-body);
+            margin-top: 16px;
         }
         
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
             color: var(--color-text-secondary);
-            padding: 40px 20px;
+            padding: 80px 20px;
         }
         
         .empty-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 72px;
+            margin-bottom: 24px;
             color: var(--color-text-secondary);
-            opacity: 0.5;
+            opacity: 0.3;
         }
         
         .empty-title {
             font-size: var(--font-size-title);
-            margin-bottom: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--color-text-primary);
         }
         
         .empty-description {
-            font-size: var(--font-size-caption);
+            font-size: var(--font-size-body);
             max-width: 300px;
             margin: 0 auto;
+            line-height: 1.6;
+            opacity: 0.7;
         }
         
         /* ==================== КАРТОЧКИ NFT ==================== */
@@ -412,127 +418,172 @@
             background: var(--color-surface);
             border-radius: var(--radius-medium);
             overflow: hidden;
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            transition: all var(--transition-medium);
             border: 1px solid var(--color-border);
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
         
         .nft-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-card);
+            border-color: var(--color-accent-primary);
+        }
+        
+        .nft-image-container {
+            width: 100%;
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .nft-image {
             width: 100%;
-            height: 160px;
-            position: relative;
-            overflow: hidden;
-            background: var(--color-primary-bg);
-        }
-        
-        .nft-image img,
-        .nft-image video {
-            width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform var(--transition-medium);
         }
         
-        .nft-emoji {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            padding: 5px 10px;
-            border-radius: var(--radius-small);
-            font-size: 20px;
-            backdrop-filter: blur(5px);
+        .nft-card:hover .nft-image {
+            transform: scale(1.05);
         }
         
         .nft-badge {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 12px;
+            left: 12px;
             background: var(--color-accent-primary);
             color: white;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: var(--radius-small);
             font-size: var(--font-size-small);
             font-weight: 600;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+        }
+        
+        .nft-emoji {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 6px 10px;
+            border-radius: var(--radius-small);
+            font-size: 20px;
+            z-index: 2;
         }
         
         .nft-info {
-            padding: 12px;
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .nft-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
         }
         
         .nft-name {
             font-size: var(--font-size-body);
             font-weight: 600;
-            margin-bottom: 6px;
+            color: var(--color-text-primary);
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.4;
+            flex: 1;
         }
         
         .nft-collection {
             font-size: var(--font-size-small);
-            color: var(--color-text-secondary);
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            color: var(--color-accent-primary);
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .nft-price-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .nft-price {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 700;
             color: var(--color-success);
-            margin-bottom: 12px;
         }
         
         .nft-price i {
-            font-size: 14px;
+            font-size: 16px;
+            opacity: 0.9;
         }
         
         .nft-attributes {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-bottom: 12px;
+            margin-top: 8px;
         }
         
         .attribute {
-            background: var(--color-surface-lighter);
+            background: rgba(255, 255, 255, 0.1);
             padding: 4px 8px;
             border-radius: var(--radius-small);
-            font-size: var(--font-size-small);
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .buy-btn {
             width: 100%;
-            padding: 10px;
-            background: var(--color-accent-primary);
+            padding: 12px;
+            background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-hover) 100%);
             color: var(--color-text-on-accent);
-            border-radius: var(--radius-medium);
+            border-radius: var(--radius-small);
             border: none;
             font-weight: 600;
             cursor: pointer;
-            transition: background var(--transition-fast);
+            transition: all var(--transition-fast);
             font-size: var(--font-size-caption);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
         }
         
         .buy-btn:hover {
-            background: var(--color-accent-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-button);
+        }
+        
+        .buy-btn:active {
+            transform: translateY(0);
         }
         
         .buy-btn:disabled {
             background: var(--color-text-secondary);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         /* ==================== СООБЩЕНИЕ ОБ ОШИБКЕ ==================== */
@@ -547,33 +598,41 @@
         }
         
         .error-icon {
-            font-size: 64px;
+            font-size: 72px;
             color: var(--color-error);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            opacity: 0.8;
         }
         
         .error-title {
             font-size: var(--font-size-title);
-            color: var(--color-text-secondary);
+            color: var(--color-text-primary);
             margin-bottom: 12px;
+            font-weight: 600;
         }
         
         .error-description {
-            font-size: var(--font-size-caption);
+            font-size: var(--font-size-body);
             color: var(--color-text-secondary);
-            margin-bottom: 20px;
+            margin-bottom: 32px;
             max-width: 300px;
+            line-height: 1.6;
         }
         
         .error-btn {
-            padding: 14px 32px;
-            background-color: var(--color-accent-primary);
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-hover) 100%);
             color: var(--color-text-on-accent);
             border-radius: var(--radius-medium);
             font-size: var(--font-size-body);
             font-weight: 600;
-            margin-top: 20px;
-            transition: transform var(--transition-fast);
+            transition: all var(--transition-fast);
+            border: none;
+            box-shadow: var(--shadow-button);
+        }
+        
+        .error-btn:active {
+            transform: scale(0.98);
         }
         
         /* ==================== ЭКРАН ПРОФИЛЯ ==================== */
@@ -593,19 +652,39 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 32px;
+            padding: 24px;
+            background: linear-gradient(135deg, var(--color-accent-primary) 0%, #764ba2 100%);
+            border-radius: var(--radius-large);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.1)" d="M0,0 L100,0 L100,100 Z"/></svg>');
+            background-size: cover;
         }
         
         .profile-avatar {
             width: 100px;
             height: 100px;
             border-radius: var(--radius-circle);
-            border: 3px solid var(--color-accent-primary);
+            border: 4px solid white;
             margin-bottom: 16px;
             overflow: hidden;
-            background-color: var(--color-surface);
+            background: white;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
         
         .profile-avatar img {
@@ -616,94 +695,134 @@
         
         .profile-avatar i {
             font-size: 48px;
-            color: var(--color-text-secondary);
+            color: var(--color-accent-primary);
         }
         
         .profile-name {
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
             margin-bottom: 4px;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            position: relative;
+            z-index: 1;
+            color: white;
         }
         
         .profile-id {
             font-size: var(--font-size-caption);
-            color: var(--color-text-secondary);
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 1;
         }
         
         .referral-container {
             background-color: var(--color-surface);
-            border-radius: var(--radius-medium);
-            padding: 20px;
+            border-radius: var(--radius-large);
+            padding: 24px;
             margin-bottom: 24px;
             border: 1px solid var(--color-border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
         
         .referral-title {
-            font-size: var(--font-size-body);
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: var(--font-size-title);
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--color-text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .referral-title i {
+            color: var(--color-accent-primary);
         }
         
         .referral-text {
-            font-size: var(--font-size-caption);
+            font-size: var(--font-size-body);
             color: var(--color-text-secondary);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             line-height: 1.6;
         }
         
         .referral-actions {
             display: flex;
             gap: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
         
         .referral-btn {
-            padding: 12px 20px;
-            background-color: var(--color-accent-primary);
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--color-accent-primary) 0%, var(--color-accent-hover) 100%);
             color: var(--color-text-on-accent);
             border-radius: var(--radius-medium);
             font-size: var(--font-size-caption);
             font-weight: 600;
             flex: 1;
             text-align: center;
-            transition: transform var(--transition-fast);
-            border: 1px solid transparent;
+            transition: all var(--transition-fast);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-button);
+        }
+        
+        .referral-btn:active {
+            transform: scale(0.98);
         }
         
         .referral-btn.secondary {
-            background-color: transparent;
-            border: 1px solid var(--color-accent-primary);
+            background: transparent;
+            border: 2px solid var(--color-accent-primary);
             color: var(--color-accent-primary);
             flex: 0;
-            padding: 12px 16px;
+            padding: 14px 20px;
+            box-shadow: none;
+        }
+        
+        .referral-link-container {
+            background-color: var(--color-surface-lighter);
+            border-radius: var(--radius-medium);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--color-border);
         }
         
         .referral-link {
-            background-color: var(--color-surface-lighter);
-            border-radius: var(--radius-medium);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             font-size: var(--font-size-caption);
-            color: var(--color-text-secondary);
+            color: var(--color-text-primary);
             word-break: break-all;
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-small);
         }
         
         .referral-copy {
-            color: var(--color-accent-primary);
-            font-size: 18px;
-            margin-left: 10px;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-circle);
+            background: var(--color-accent-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all var(--transition-fast);
             flex-shrink: 0;
+        }
+        
+        .referral-copy:active {
+            transform: scale(0.95);
         }
         
         .stats-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 24px;
         }
@@ -713,50 +832,83 @@
             border-radius: var(--radius-medium);
             padding: 20px;
             border: 1px solid var(--color-border);
+            transition: all var(--transition-fast);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: var(--color-accent-primary);
         }
         
         .stat-label {
             font-size: var(--font-size-caption);
             color: var(--color-text-secondary);
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .stat-label i {
+            font-size: 14px;
         }
         
         .stat-value {
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--color-text-primary);
         }
         
         .stat-value i {
             color: var(--color-accent-primary);
-            font-size: 16px;
+            font-size: 20px;
+        }
+        
+        .withdraw-container {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border);
         }
         
         .withdraw-btn {
             width: 100%;
-            padding: 18px;
-            background-color: var(--color-accent-primary);
-            color: var(--color-text-on-accent);
+            padding: 20px;
+            background: linear-gradient(135deg, var(--color-error) 0%, #ff4757 100%);
+            color: white;
             border-radius: var(--radius-medium);
             font-size: var(--font-size-body);
-            font-weight: 600;
+            font-weight: 700;
             text-align: center;
-            transition: transform var(--transition-fast);
-            margin-top: auto;
+            transition: all var(--transition-fast);
             border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 16px rgba(255, 59, 48, 0.2);
+        }
+        
+        .withdraw-btn:active {
+            transform: scale(0.98);
         }
         
         .withdraw-btn.disabled {
-            background-color: var(--color-text-secondary);
+            background: var(--color-text-secondary);
             cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
         }
         
         /* ==================== ЭКРАН MY GIFTS ==================== */
         .gifts-container {
             padding: 20px 16px 80px;
             min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
         }
         
         .gifts-header {
@@ -768,34 +920,44 @@
         }
         
         .back-btn {
-            background: none;
-            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-circle);
+            background: var(--color-surface);
             color: var(--color-text-primary);
-            font-size: 24px;
-            cursor: pointer;
-            margin-right: 16px;
-            width: 40px;
-            height: 40px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-circle);
-            transition: background-color var(--transition-fast);
+            margin-right: 16px;
+            transition: all var(--transition-fast);
+            border: 1px solid var(--color-border);
         }
         
-        .back-btn:hover {
-            background-color: var(--color-surface);
+        .back-btn:active {
+            transform: scale(0.95);
+            background: var(--color-accent-primary);
+            color: white;
         }
         
         .gifts-header h2 {
             font-size: var(--font-size-title);
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            flex: 1;
         }
         
         .gifts-grid {
+            flex: 1;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+        }
+        
+        @media (min-width: 768px) {
+            .gifts-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         
         /* ==================== НИЖНЕЕ МЕНЮ ==================== */
@@ -811,6 +973,7 @@
             z-index: 100;
             border-top: 1px solid var(--color-border);
             height: 80px;
+            backdrop-filter: blur(20px);
         }
         
         .tab-item {
@@ -818,15 +981,28 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             color: var(--color-text-secondary);
-            transition: color var(--transition-medium);
+            transition: all var(--transition-medium);
             height: 100%;
             flex: 1;
+            position: relative;
         }
         
         .tab-item.active {
             color: var(--color-accent-primary);
+        }
+        
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--color-accent-primary);
+            border-radius: 2px;
         }
         
         .tab-item.active .tab-icon {
@@ -835,47 +1011,87 @@
         
         .tab-icon {
             font-size: 22px;
+            transition: all var(--transition-fast);
         }
         
         .tab-label {
             font-size: var(--font-size-small);
+            font-weight: 500;
+            transition: all var(--transition-fast);
         }
         
         /* ==================== УВЕДОМЛЕНИЯ ==================== */
         .toast {
             position: fixed;
-            bottom: 90px;
+            bottom: 100px;
             left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--color-surface);
+            transform: translateX(-50%) translateY(20px);
+            background: var(--color-surface);
             color: var(--color-text-primary);
-            padding: 12px 20px;
+            padding: 16px 24px;
             border-radius: var(--radius-medium);
             font-size: var(--font-size-caption);
             z-index: 1000;
-            box-shadow: var(--shadow-modal);
-            animation: fadeIn var(--transition-fast);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease forwards;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             max-width: 90%;
             word-break: break-word;
+            border-left: 4px solid var(--color-accent-primary);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--color-border);
         }
         
         .toast.success {
-            border-left: 4px solid var(--color-success);
+            border-left-color: var(--color-success);
         }
         
         .toast.error {
-            border-left: 4px solid var(--color-error);
+            border-left-color: var(--color-error);
         }
         
         .toast.info {
-            border-left: 4px solid var(--color-accent-primary);
+            border-left-color: var(--color-accent-primary);
         }
         
         .toast.warning {
-            border-left: 4px solid var(--color-warning);
+            border-left-color: var(--color-warning);
+        }
+        
+        .toast i {
+            font-size: 20px;
+        }
+        
+        /* ==================== МОДАЛЬНЫЕ ОКНА ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            animation: fadeIn var(--transition-slow);
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal {
+            width: 100%;
+            background-color: var(--color-surface);
+            border-radius: var(--radius-large) var(--radius-large) 0 0;
+            padding: 24px 20px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp var(--transition-medium);
+            box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .modal.closing {
+            animation: slideDown var(--transition-medium) forwards;
         }
         
         /* ==================== АДАПТИВ ==================== */
@@ -885,15 +1101,28 @@
                 margin: 0 auto;
             }
             
-            .nft-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            .nft-grid, .gifts-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
             }
         }
         
-        @media (min-width: 1024px) {
-            .container {
-                max-width: 1024px;
-            }
+        /* ==================== SCROLLBAR ==================== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-accent-primary);
         }
     </style>
 </head>
@@ -924,7 +1153,7 @@
         <div class="search-container">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" class="search-input" id="searchInput" placeholder="Поиск по ID или названию">
+                <input type="text" class="search-input" id="searchInput" placeholder="Поиск NFT...">
             </div>
         </div>
         
@@ -935,36 +1164,22 @@
                 <span>Сортировка</span>
             </button>
             <button class="filter-btn" id="collectionBtn">
-                <span>Коллекция</span>
-                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-layer-group"></i>
+                <span>Коллекции</span>
             </button>
-            <button class="filter-btn" id="backdropBtn">
-                <span>Фон</span>
-                <i class="fas fa-chevron-down"></i>
+            <button class="filter-btn" id="priceFilterBtn">
+                <i class="fas fa-filter"></i>
+                <span>Цена</span>
             </button>
-            <button class="filter-btn" id="symbolBtn">
-                <span>Символ</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-        </div>
-        
-        <!-- Переключатель -->
-        <div class="toggle-container">
-            <button class="toggle-btn active" data-tab="market">
-                Маркетплейс
-                <div class="toggle-indicator"></div>
-            </button>
-            <button class="toggle-btn" data-tab="listed">
-                Листинг
-                <div class="toggle-indicator"></div>
+            <button class="filter-btn" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i>
             </button>
         </div>
         
-        <!-- Сетка NFT (заполняется через API) -->
-        <div class="nft-grid" id="nftGrid">
-            <div class="loading-state">
-                <i class="fas fa-spinner"></i>
-                <div>Загрузка NFT с маркетплейса...</div>
+        <!-- Контейнер для NFT -->
+        <div class="nft-grid-container">
+            <div class="nft-grid" id="nftGrid">
+                <!-- NFT будут загружены через API -->
             </div>
         </div>
         
@@ -989,10 +1204,7 @@
                 <h2>Мои NFT</h2>
             </div>
             <div class="gifts-grid" id="userNftGrid">
-                <div class="loading-state">
-                    <i class="fas fa-spinner"></i>
-                    <div>Загрузка ваших NFT...</div>
-                </div>
+                <!-- NFT пользователя будут загружены через API -->
             </div>
             
             <div class="error-container hidden" id="giftsErrorContainer">
@@ -1000,7 +1212,7 @@
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 <div class="error-title">Ошибка загрузки</div>
-                <div class="error-description"></div>
+                <div class="error-description" id="giftsErrorDescription"></div>
                 <button class="error-btn" id="retryGiftsBtn">Попробовать снова</button>
             </div>
         </div>
@@ -1019,19 +1231,31 @@
                 </div>
                 
                 <div class="referral-container">
-                    <div class="referral-title">Реферальная система</div>
+                    <div class="referral-title">
+                        <i class="fas fa-user-friends"></i>
+                        Реферальная программа
+                    </div>
                     <div class="referral-text">
-                        Приглашайте друзей и получайте бонусы! За каждого приглашенного друга 
-                        вы получите 10% от его первого депозита.
+                        🎁 <strong>Приглашайте друзей и получайте бонусы!</strong><br>
+                        За каждого приглашенного друга вы получите <strong>10%</strong> от его первого депозита.
                         <br><br>
-                        <i>⚠️ Система находится в разработке</i>
+                        <span style="color: var(--color-warning);">
+                            ⚠️ <i>Система находится в разработке, бонусы пока не начисляются</i>
+                        </span>
                     </div>
                     <div class="referral-actions">
-                        <button class="referral-btn" id="inviteBtn">Пригласить</button>
-                        <button class="referral-btn secondary" id="referralTermsBtn">Условия</button>
+                        <button class="referral-btn" id="inviteBtn">
+                            <i class="fas fa-share-alt"></i>
+                            Поделиться
+                        </button>
+                        <button class="referral-btn secondary" id="referralTermsBtn">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
                     </div>
-                    <div class="referral-link">
-                        <span id="referralLink">Загрузка ссылки...</span>
+                    <div class="referral-link-container">
+                        <div class="referral-link" id="referralLink">
+                            Загрузка...
+                        </div>
                         <button class="referral-copy" id="copyLinkBtn">
                             <i class="fas fa-copy"></i>
                         </button>
@@ -1040,39 +1264,53 @@
                 
                 <div class="stats-container">
                     <div class="stat-card">
-                        <div class="stat-label">Баланс</div>
-                        <div class="stat-value" id="profileBalance">
+                        <div class="stat-label">
                             <i class="fas fa-wallet"></i>
+                            Баланс
+                        </div>
+                        <div class="stat-value" id="profileBalance">
+                            <i class="fas fa-coins"></i>
                             <span>0.00 TON</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Мои NFT</div>
-                        <div class="stat-value" id="nftCount">
+                        <div class="stat-label">
                             <i class="fas fa-gem"></i>
+                            Мои NFT
+                        </div>
+                        <div class="stat-value" id="nftCount">
+                            <i class="fas fa-box-open"></i>
                             <span>0</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Рефералы</div>
-                        <div class="stat-value" id="referralCount">
+                        <div class="stat-label">
                             <i class="fas fa-users"></i>
+                            Рефералы
+                        </div>
+                        <div class="stat-value" id="referralCount">
+                            <i class="fas fa-user-plus"></i>
                             <span>0</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Статус вывода</div>
+                        <div class="stat-label">
+                            <i class="fas fa-ban"></i>
+                            Статус вывода
+                        </div>
                         <div class="stat-value" id="withdrawStatus">
-                            <i class="fas fa-ban" style="color: var(--color-error);"></i>
+                            <i class="fas fa-exclamation-triangle" style="color: var(--color-error);"></i>
                             <span style="color: var(--color-error);">Отключен</span>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <button class="withdraw-btn disabled" id="withdrawBtn" disabled>
-                <i class="fas fa-ban"></i> Вывод временно отключен
-            </button>
+            <div class="withdraw-container">
+                <button class="withdraw-btn disabled" id="withdrawBtn" disabled>
+                    <i class="fas fa-ban"></i> Вывод временно отключен
+                </button>
+            </div>
         </div>
     </div>
     
@@ -1088,7 +1326,7 @@
             <div class="tab-icon">
                 <i class="fas fa-gift"></i>
             </div>
-            <div class="tab-label">My Gifts</div>
+            <div class="tab-label">My NFTs</div>
         </button>
         <button class="tab-item" data-tab="profile">
             <div class="tab-icon">
@@ -1107,18 +1345,19 @@
         let currentUser = null;
         let walletBalance = "0.00";
         let telegramWebApp = null;
+        let botUsername = 'xbanking_bot'; // Замените на имя вашего бота
         
-        // API эндпоинты (замените на ваши реальные)
-        const API_BASE = '/api'; // Замените на адрес вашего FastAPI сервера
+        // API эндпоинты (замените на ваш реальный URL)
+        const API_BASE = window.location.origin; // Используем текущий домен
         const API_ENDPOINTS = {
-            marketNFTs: `${API_BASE}/market/nfts`,
-            searchNFTs: `${API_BASE}/market/nfts/search`,
-            userNFTs: `${API_BASE}/market/user/nfts`,
-            walletBalance: `${API_BASE}/market/wallets/balance`,
-            collections: `${API_BASE}/market/collections/backdrops`,
-            config: `${API_BASE}/market/config`,
-            buyNFT: `${API_BASE}/market/nfts/buy`,
-            withdraw: `${API_BASE}/market/nfts/withdraw`
+            marketNFTs: `${API_BASE}/api/market/nfts`,
+            searchNFTs: `${API_BASE}/api/market/nfts/search`,
+            userNFTs: `${API_BASE}/api/market/user/nfts`,
+            walletBalance: `${API_BASE}/api/market/wallets/balance`,
+            collections: `${API_BASE}/api/market/collections/backdrops`,
+            config: `${API_BASE}/api/market/config`,
+            buyNFT: `${API_BASE}/api/market/nfts/buy`,
+            withdraw: `${API_BASE}/api/market/nfts/withdraw`
         };
         
         // ==================== ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP ====================
@@ -1127,209 +1366,258 @@
                 telegramWebApp = window.Telegram.WebApp;
                 
                 if (telegramWebApp) {
+                    console.log("✅ Telegram Web App доступен");
+                    
                     telegramWebApp.expand();
                     telegramWebApp.enableClosingConfirmation();
+                    telegramWebApp.setHeaderColor('#000000');
+                    telegramWebApp.setBackgroundColor('#000000');
                     
                     currentUser = telegramWebApp.initDataUnsafe?.user;
                     
                     if (currentUser) {
-                        console.log("Telegram user loaded:", currentUser);
+                        console.log("👤 Данные пользователя:", currentUser);
                         updateUserUI();
-                        loadInitialData();
+                        applyTelegramTheme();
+                        
+                        // Загружаем данные после небольшой задержки
+                        setTimeout(() => {
+                            loadInitialData();
+                        }, 300);
+                        
+                        showToast(`👋 Добро пожаловать, ${currentUser.first_name || 'друг'}!`, 'success');
                     } else {
-                        console.log("No Telegram user data");
+                        console.warn("⚠️ Данные пользователя не найдены");
                         loadFallbackUserData();
                     }
                     
-                    applyTelegramTheme();
                     telegramWebApp.onEvent('themeChanged', applyTelegramTheme);
                     
                 } else {
-                    console.log("Telegram Web App not available");
+                    console.error("❌ Telegram Web App не доступен");
                     loadFallbackUserData();
                 }
             } catch (error) {
-                console.error("Telegram Web App init error:", error);
+                console.error("❌ Ошибка инициализации Telegram Web App:", error);
                 loadFallbackUserData();
             }
         }
         
         function applyTelegramTheme() {
-            if (telegramWebApp) {
+            if (telegramWebApp && telegramWebApp.themeParams) {
+                console.log("🎨 Применяем тему Telegram");
                 const theme = telegramWebApp.themeParams;
-                if (theme) {
-                    document.documentElement.style.setProperty('--color-primary-bg', theme.bg_color || '#000000');
-                    document.documentElement.style.setProperty('--color-text-primary', theme.text_color || '#FFFFFF');
-                    document.documentElement.style.setProperty('--color-accent-primary', theme.button_color || '#007AFF');
-                }
+                
+                // Обновляем CSS переменные
+                document.documentElement.style.setProperty('--tg-bg-color', theme.bg_color || '#000000');
+                document.documentElement.style.setProperty('--tg-text-color', theme.text_color || '#FFFFFF');
+                document.documentElement.style.setProperty('--tg-hint-color', theme.hint_color || '#8E8E93');
+                document.documentElement.style.setProperty('--tg-link-color', theme.link_color || '#007AFF');
+                document.documentElement.style.setProperty('--tg-button-color', theme.button_color || '#007AFF');
+                document.documentElement.style.setProperty('--tg-button-text-color', theme.button_text_color || '#FFFFFF');
+                document.documentElement.style.setProperty('--tg-secondary-bg-color', theme.secondary_bg_color || '#1E1E1E');
+                
+                // Применяем к body для плавного перехода
+                document.body.style.backgroundColor = theme.bg_color || '#000000';
+                document.body.style.color = theme.text_color || '#FFFFFF';
             }
         }
         
         function loadFallbackUserData() {
+            console.log("🔄 Загружаем демо данные");
             currentUser = {
-                id: Date.now(),
-                username: "user_" + Math.floor(Math.random() * 1000),
-                first_name: "Гость",
-                photo_url: ""
+                id: Math.floor(Math.random() * 1000000),
+                username: `user_${Math.floor(Math.random() * 1000)}`,
+                first_name: "Демо Пользователь",
+                last_name: "",
+                photo_url: "",
+                is_premium: false
             };
+            
             updateUserUI();
-            loadInitialData();
-            showToast("Демо режим", "info");
+            applyTelegramTheme();
+            
+            setTimeout(() => {
+                loadInitialData();
+            }, 500);
+            
+            showToast("🔧 Режим демонстрации", "info");
         }
         
         // ==================== ОБНОВЛЕНИЕ UI ====================
         function updateUserUI() {
             if (!currentUser) return;
             
+            console.log("🔄 Обновляем UI пользователя");
+            
             const userName = currentUser.first_name || currentUser.username || "Пользователь";
             const userAvatar = currentUser.photo_url;
             
-            // Шапка
+            // Обновляем шапку
             const userInfo = document.getElementById('userInfo');
+            const avatarHtml = userAvatar ? 
+                `<img src="${userAvatar}" alt="${userName}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iMjAiIGZpbGw9IiMwMDdBRkYiLz4KPHBhdGggZD0iTTIwIDI0QzIzLjMxMzcgMjQgMjYgMjEuMzEzNyAyNiAxOEMyNiAxNC42ODYzIDIzLjMxMzcgMTIgMjAgMTJDMTYuNjg2MyAxMiAxNCAxNC42ODYzIDE0IDE4QzE0IDIxLjMxMzcgMTYuNjg2MyAyNCAyMCAyNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yMCAyNkMyNS41MjIgMjYgMzAgMjcuNzkwOSAzMCAzMEgzMEMzMCAzMi4yMDkxIDI1LjUyMiAzNCAyMCAzNEMxNC40NzggMzQgMTAgMzIuMjA5MSAxMCAzMEgxMEMxMCAyNy43OTA5IDE0LjQ3OCAyNiAyMCAyNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';">` :
+                `<i class="fas fa-user"></i>`;
+            
             userInfo.innerHTML = `
                 <div class="avatar">
-                    ${userAvatar ? 
-                        `<img src="${userAvatar}" alt="${userName}" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<i class=\"fas fa-user\"></i>';">` :
-                        `<i class="fas fa-user"></i>`
-                    }
+                    ${avatarHtml}
                 </div>
                 <span class="username">${userName}</span>
             `;
             
-            // Профиль
+            // Обновляем профиль
             document.getElementById('profileName').textContent = userName;
             document.getElementById('profileId').textContent = `ID: #${currentUser.id}`;
             
             const profileAvatar = document.getElementById('profileAvatar');
             if (userAvatar) {
-                profileAvatar.innerHTML = `<img src="${userAvatar}" alt="${userName}" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<i class=\"fas fa-user\"></i>';">`;
+                profileAvatar.innerHTML = `<img src="${userAvatar}" alt="${userName}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iNTAiIGZpbGw9IiMwMDdBRkYiLz4KPHBhdGggZD0iTTUwIDYwQzU4LjI4NDMgNjAgNjUgNTMuMjg0MyA2NSA0NUM2NSAzNi43MTU3IDU4LjI4NDMgMzAgNTAgMzBDNDEuNzE1NyAzMCAzNSAzNi43MTU3IDM1IDQ1QzM1IDUzLjI4NDMgNDEuNzE1NyA2MCA1MCA2MFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik01MCA2NUM2My44MDcyIDY1IDc1IDY5LjQ3NzIgNzUgNzVINzVDNzUgODAuNTIyOCA2My44MDcyIDg1IDUwIDg1QzM2LjE5MjggODUgMjUgODAuNTIyOCAyNSA3NUgyNUMyNSA2OS40NzcyIDM2LjE5MjggNjUgNTAgNjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K';" />`;
+            } else {
+                profileAvatar.innerHTML = '<i class="fas fa-user"></i>';
             }
             
-            // Реферальная ссылка
-            document.getElementById('referralLink').textContent = 
-                `https://t.me/xbanking_bot?start=ref_${currentUser.id}`;
+            // Обновляем реферальную ссылку
+            const referralLink = document.getElementById('referralLink');
+            referralLink.textContent = `https://t.me/${botUsername}?start=ref_${currentUser.id}`;
         }
         
-        // ==================== ЗАГРУЗКА ДАННЫХ С API ====================
+        // ==================== ЗАГРУЗКА ДАННЫХ ====================
         async function loadInitialData() {
+            console.log("🔄 Начинаем загрузку начальных данных");
+            
             try {
                 await Promise.all([
                     loadWalletBalanceAPI(),
                     loadMarketNFTs()
                 ]);
+                console.log("✅ Начальные данные загружены");
             } catch (error) {
-                console.error("Ошибка загрузки начальных данных:", error);
+                console.error("❌ Ошибка загрузки начальных данных:", error);
+                showError("Ошибка загрузки", "Не удалось загрузить данные. Проверьте соединение.");
             }
         }
         
         async function loadWalletBalanceAPI() {
+            console.log("🔄 Загружаем баланс");
+            const balanceElement = document.getElementById('walletBalance');
+            balanceElement.classList.add('loading');
+            
             try {
                 const response = await fetch(API_ENDPOINTS.walletBalance);
+                
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("💰 Данные баланса:", data);
+                    
                     walletBalance = data.balance || "0.00";
+                    updateBalanceUI();
+                    
+                    showToast("✅ Баланс обновлен", "success");
+                } else {
+                    console.warn("⚠️ Баланс не получен, используем демо данные");
+                    walletBalance = (Math.random() * 10).toFixed(2);
                     updateBalanceUI();
                 }
             } catch (error) {
-                console.error("Ошибка загрузки баланса:", error);
-                // Временно показываем демо баланс
-                walletBalance = (Math.random() * 10).toFixed(2);
+                console.error("❌ Ошибка загрузки баланса:", error);
+                walletBalance = "0.00";
                 updateBalanceUI();
+            } finally {
+                balanceElement.classList.remove('loading');
             }
         }
         
         function updateBalanceUI() {
+            console.log("🔄 Обновляем UI баланса:", walletBalance);
             document.getElementById('balanceAmount').textContent = walletBalance;
             document.getElementById('profileBalance').innerHTML = `
-                <i class="fas fa-wallet"></i>
+                <i class="fas fa-coins"></i>
                 <span>${walletBalance} TON</span>
             `;
         }
         
         async function loadMarketNFTs() {
+            console.log("🔄 Загружаем NFT с маркетплейса");
+            const nftGrid = document.getElementById('nftGrid');
+            nftGrid.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <div>Загрузка NFT...</div>
+                </div>
+            `;
+            
             try {
-                const nftGrid = document.getElementById('nftGrid');
-                nftGrid.innerHTML = `
-                    <div class="loading-state">
-                        <i class="fas fa-spinner"></i>
-                        <div>Загрузка NFT с маркетплейса...</div>
-                    </div>
-                `;
-                
                 const response = await fetch(API_ENDPOINTS.marketNFTs);
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Market NFTs loaded:", data);
+                    console.log("🎨 Получены NFT:", data);
                     
                     if (data.nfts && data.nfts.length > 0) {
                         displayNFTs(data.nfts, nftGrid, false);
+                        showToast(`✅ Загружено ${data.nfts.length} NFT`, "success");
                     } else {
                         showNoNFTsMessage(nftGrid, "На маркетплейсе пока нет NFT");
                     }
                 } else {
+                    console.error(`❌ Ошибка API: ${response.status}`);
                     throw new Error(`API error: ${response.status}`);
                 }
             } catch (error) {
-                console.error("Ошибка загрузки NFT:", error);
-                showError("Ошибка загрузки", "Не удалось загрузить NFT с маркетплейса");
+                console.error("❌ Ошибка загрузки NFT:", error);
+                showError("Ошибка загрузки", "Не удалось загрузить NFT. Проверьте подключение к API.");
             }
         }
         
         async function loadUserNFTs() {
+            console.log("🔄 Загружаем NFT пользователя");
+            const userNftGrid = document.getElementById('userNftGrid');
+            userNftGrid.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <div>Загрузка ваших NFT...</div>
+                </div>
+            `;
+            
             try {
-                const userNftGrid = document.getElementById('userNftGrid');
-                userNftGrid.innerHTML = `
-                    <div class="loading-state">
-                        <i class="fas fa-spinner"></i>
-                        <div>Загрузка ваших NFT...</div>
-                    </div>
-                `;
-                
-                // Здесь нужно добавить пользовательский токен или ID
                 const response = await fetch(API_ENDPOINTS.userNFTs);
                 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("🎁 NFT пользователя:", data);
                     
                     if (data.nfts && data.nfts.length > 0) {
                         displayNFTs(data.nfts, userNftGrid, true);
                         
                         // Обновляем счетчик NFT
                         document.getElementById('nftCount').innerHTML = `
-                            <i class="fas fa-gem"></i>
+                            <i class="fas fa-box-open"></i>
                             <span>${data.nfts.length}</span>
                         `;
+                        
+                        showToast(`✅ Ваши NFT загружены (${data.nfts.length})`, "success");
                     } else {
                         showNoNFTsMessage(userNftGrid, "У вас пока нет NFT");
+                        document.getElementById('nftCount').innerHTML = `
+                            <i class="fas fa-box-open"></i>
+                            <span>0</span>
+                        `;
                     }
                 } else {
                     throw new Error(`API error: ${response.status}`);
                 }
             } catch (error) {
-                console.error("Ошибка загрузки NFT пользователя:", error);
+                console.error("❌ Ошибка загрузки NFT пользователя:", error);
+                document.getElementById('giftsErrorDescription').textContent = "Не удалось загрузить ваши NFT";
                 document.getElementById('giftsErrorContainer').classList.remove('hidden');
-            }
-        }
-        
-        async function searchNFTs(searchParams = {}) {
-            try {
-                const params = new URLSearchParams(searchParams);
-                const response = await fetch(`${API_ENDPOINTS.searchNFTs}?${params}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.nfts || [];
-                }
-                return [];
-            } catch (error) {
-                console.error("Ошибка поиска NFT:", error);
-                return [];
             }
         }
         
         // ==================== ОТОБРАЖЕНИЕ NFT ====================
         function displayNFTs(nfts, container, isUserNFTs = false) {
+            console.log(`🖼️ Отображаем ${nfts.length} NFT`);
+            
             if (!nfts || nfts.length === 0) {
                 showNoNFTsMessage(container, isUserNFTs ? "У вас пока нет NFT" : "NFT не найдены");
                 return;
@@ -1358,39 +1646,61 @@
             card.className = 'nft-card';
             
             // Подготовка данных NFT
-            const nftName = nft.name || `NFT #${nft.external_collection_number || 'Unknown'}`;
-            const nftPrice = nft.price ? `${nft.price} TON` : 'N/A';
-            const nftImage = nft.photo_url || nft.animation_url || 'https://via.placeholder.com/300x300/1E1E1E/8E8E93?text=NFT';
-            const nftCollection = nft.collection_id || 'Unknown';
-            const nftEmoji = nft.emoji_id || '';
+            const nftName = nft.name || `NFT #${nft.external_collection_number || nft.id?.slice(-4) || '0000'}`;
+            const nftPrice = nft.price ? `${parseFloat(nft.price).toFixed(2)} TON` : 'Цена не указана';
+            const nftImage = nft.photo_url || nft.animation_url || 
+                'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=300&h=300&fit=crop';
+            const nftCollection = nft.collection_id || 'Без коллекции';
+            const nftEmoji = nft.emoji_id || '🖼️';
             const nftAttributes = nft.attributes || [];
             
+            // Определяем редкие атрибуты
+            const rareAttributes = nftAttributes.filter(attr => 
+                attr.rarity_per_mille > 500 || 
+                attr.type?.toLowerCase().includes('rare') ||
+                attr.value?.toString().toLowerCase().includes('legend')
+            );
+            
             card.innerHTML = `
-                <div class="nft-image">
+                <div class="nft-image-container">
                     ${nft.animation_url ? 
-                        `<video autoplay loop muted playsinline>
+                        `<video class="nft-image" autoplay loop muted playsinline>
                             <source src="${nft.animation_url}" type="video/mp4">
-                            <img src="${nft.photo_url || nftImage}" alt="${nftName}">
+                            <img class="nft-image" src="${nft.photo_url || nftImage}" alt="${nftName}">
                         </video>` :
-                        `<img src="${nftImage}" alt="${nftName}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300/1E1E1E/8E8E93?text=NFT';">`
+                        `<img class="nft-image" src="${nftImage}" alt="${nftName}" loading="lazy" 
+                            onerror="this.src='https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=300&h=300&fit=crop';">`
                     }
-                    ${isOwned ? `<div class="nft-badge">Ваш</div>` : ''}
-                    ${nftEmoji ? `<div class="nft-emoji">${nftEmoji}</div>` : ''}
+                    ${isOwned ? `<div class="nft-badge">ВАШ</div>` : ''}
+                    ${rareAttributes.length > 0 ? `<div class="nft-badge" style="background: #FFD700; color: #000;">⭐ РЕДКИЙ</div>` : ''}
+                    <div class="nft-emoji">${nftEmoji}</div>
                 </div>
                 <div class="nft-info">
-                    <div class="nft-name" title="${nftName}">${nftName}</div>
-                    <div class="nft-collection" title="${nftCollection}">${nftCollection}</div>
-                    <div class="nft-price">
-                        <i class="fas fa-gem"></i>
-                        <span>${nftPrice}</span>
+                    <div class="nft-header">
+                        <div class="nft-name" title="${nftName}">${nftName}</div>
                     </div>
-                    <div class="nft-attributes">
-                        ${nftAttributes.slice(0, 2).map(attr => 
-                            `<span class="attribute" title="${attr.type || 'Attribute'}: ${attr.value}">${attr.value}</span>`
-                        ).join('')}
+                    <div class="nft-collection">${nftCollection}</div>
+                    
+                    ${nftAttributes.length > 0 ? `
+                        <div class="nft-attributes">
+                            ${nftAttributes.slice(0, 3).map(attr => 
+                                `<span class="attribute" title="${attr.type || 'Атрибут'}: ${attr.value}">
+                                    ${attr.type?.slice(0, 1) || 'A'}: ${attr.value?.toString().slice(0, 10) || 'N/A'}
+                                </span>`
+                            ).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="nft-price-container">
+                        <div class="nft-price">
+                            <i class="fas fa-gem"></i>
+                            <span>${nftPrice}</span>
+                        </div>
                     </div>
+                    
                     <button class="buy-btn" data-nft-id="${nft.id}" ${isOwned ? 'disabled' : ''}>
-                        <i class="fas fa-shopping-cart"></i> ${isOwned ? 'Владеете' : 'Купить'}
+                        <i class="fas fa-${isOwned ? 'check' : 'shopping-cart'}"></i>
+                        ${isOwned ? 'В вашей коллекции' : 'Купить'}
                     </button>
                 </div>
             `;
@@ -1407,8 +1717,8 @@
                     <div class="empty-title">${message}</div>
                     <div class="empty-description">
                         ${currentScreen === 'market' ? 
-                            'Проверьте позже или измените параметры поиска' : 
-                            'Купите NFT на маркетплейсе!'}
+                            'Возвращайтесь позже или проверьте фильтры' : 
+                            'Приобретайте NFT на маркетплейсе!'}
                     </div>
                 </div>
             `;
@@ -1417,9 +1727,11 @@
         // ==================== ОБРАБОТКА ДЕЙСТВИЙ ====================
         async function handleBuyNFT(nftId) {
             try {
-                // Находим NFT в данных
                 const nftResponse = await fetch(API_ENDPOINTS.marketNFTs);
-                if (!nftResponse.ok) return;
+                if (!nftResponse.ok) {
+                    showToast("Ошибка загрузки данных NFT", "error");
+                    return;
+                }
                 
                 const data = await nftResponse.json();
                 const nft = data.nfts?.find(n => n.id === nftId);
@@ -1429,31 +1741,45 @@
                     return;
                 }
                 
-                // Проверяем баланс
-                if (parseFloat(walletBalance) < parseFloat(nft.price || 0)) {
-                    showToast("Недостаточно средств", "error");
+                const price = parseFloat(nft.price || 0);
+                const balance = parseFloat(walletBalance);
+                
+                if (balance < price) {
+                    showToast("❌ Недостаточно средств на балансе", "error");
                     return;
                 }
                 
-                // Покупка NFT (заглушка - в реальности здесь будет POST запрос)
-                showToast(`Покупка ${nft.name}...`, "info");
+                showToast(`🛒 Покупаем ${nft.name}...`, "info");
                 
-                // Имитация покупки
-                setTimeout(() => {
-                    showToast(`NFT "${nft.name}" успешно куплен!`, "success");
+                // Симуляция покупки
+                setTimeout(async () => {
                     // Обновляем баланс
-                    walletBalance = (parseFloat(walletBalance) - parseFloat(nft.price || 0)).toFixed(2);
+                    walletBalance = (balance - price).toFixed(2);
                     updateBalanceUI();
-                }, 1500);
+                    
+                    // Перезагружаем NFT
+                    if (currentScreen === 'market') {
+                        await loadMarketNFTs();
+                    }
+                    
+                    showToast(`✅ NFT "${nft.name}" успешно куплен!`, "success");
+                    
+                    // Показываем уведомление в Telegram
+                    if (telegramWebApp) {
+                        telegramWebApp.HapticFeedback.impactOccurred('medium');
+                    }
+                    
+                }, 2000);
                 
             } catch (error) {
-                console.error("Ошибка покупки NFT:", error);
-                showToast("Ошибка при покупке", "error");
+                console.error("❌ Ошибка покупки NFT:", error);
+                showToast("Ошибка при покупке NFT", "error");
             }
         }
         
         // ==================== УТИЛИТЫ ====================
         function showError(title, description) {
+            console.error(`❌ ${title}: ${description}`);
             document.getElementById('errorTitle').textContent = title;
             document.getElementById('errorDescription').textContent = description;
             document.getElementById('errorContainer').classList.remove('hidden');
@@ -1464,10 +1790,22 @@
         }
         
         function showToast(message, type = 'success') {
+            console.log(`📢 Toast (${type}): ${message}`);
+            
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
             toast.className = `toast ${type}`;
             toast.classList.remove('hidden');
+            
+            // Вибрация для важных уведомлений
+            if (type === 'error' || type === 'success') {
+                if (telegramWebApp?.HapticFeedback) {
+                    telegramWebApp.HapticFeedback.impactOccurred('light');
+                }
+            }
             
             clearTimeout(toast.timeoutId);
             toast.timeoutId = setTimeout(() => {
@@ -1481,12 +1819,23 @@
         }
         
         function showScreen(screenName) {
+            console.log(`🔄 Переключаем на экран: ${screenName}`);
+            
+            // Скрываем все экраны
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.add('hidden');
             });
             
-            document.getElementById(`${screenName}Screen`).classList.remove('hidden');
+            // Показываем нужный экран
+            const targetScreen = document.getElementById(`${screenName}Screen`);
+            targetScreen.classList.remove('hidden');
+            targetScreen.style.opacity = '0';
             
+            setTimeout(() => {
+                targetScreen.style.opacity = '1';
+            }, 10);
+            
+            // Обновляем активный таб
             document.querySelectorAll('.tab-item').forEach(tab => {
                 if (tab.dataset.tab === screenName) {
                     tab.classList.add('active');
@@ -1497,6 +1846,7 @@
             
             currentScreen = screenName;
             
+            // Загружаем данные для экрана
             switch(screenName) {
                 case 'gifts':
                     loadUserNFTs();
@@ -1504,135 +1854,208 @@
                 case 'market':
                     loadMarketNFTs();
                     break;
+                case 'profile':
+                    // Данные профиля уже загружены
+                    updateUserUI();
+                    break;
             }
         }
         
         // ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
         document.addEventListener('DOMContentLoaded', function() {
-            initTelegramWebApp();
+            console.log("🚀 Документ загружен");
+            
+            // Инициализация Telegram Web App
+            setTimeout(() => {
+                initTelegramWebApp();
+            }, 100);
             
             // Нижнее меню
             document.querySelectorAll('.tab-item').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const screenName = this.dataset.tab;
                     showScreen(screenName);
+                    
+                    // Анимация нажатия
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
                 });
             });
             
             // Кнопки управления
-            document.getElementById('backToMarketBtn').addEventListener('click', () => showScreen('market'));
+            document.getElementById('backToMarketBtn').addEventListener('click', () => {
+                showScreen('market');
+                if (telegramWebApp?.HapticFeedback) {
+                    telegramWebApp.HapticFeedback.impactOccurred('light');
+                }
+            });
             
             document.getElementById('copyLinkBtn').addEventListener('click', function() {
                 const link = document.getElementById('referralLink').textContent;
-                navigator.clipboard.writeText(link).then(() => {
-                    showToast('Ссылка скопирована!', 'success');
-                });
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(link).then(() => {
+                        showToast('✅ Ссылка скопирована!', 'success');
+                        if (telegramWebApp?.HapticFeedback) {
+                            telegramWebApp.HapticFeedback.impactOccurred('light');
+                        }
+                    }).catch(err => {
+                        console.error('❌ Ошибка копирования:', err);
+                        showToast('❌ Не удалось скопировать', 'error');
+                    });
+                } else {
+                    // Fallback для старых браузеров
+                    const textArea = document.createElement('textarea');
+                    textArea.value = link;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        showToast('✅ Ссылка скопирована!', 'success');
+                    } catch (err) {
+                        console.error('❌ Ошибка копирования:', err);
+                        showToast('❌ Не удалось скопировать', 'error');
+                    }
+                    document.body.removeChild(textArea);
+                }
+                
+                // Анимация нажатия
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
             
             document.getElementById('inviteBtn').addEventListener('click', function() {
-                showToast('Используйте ссылку выше для приглашения', 'info');
+                const link = document.getElementById('referralLink').textContent;
+                
+                if (telegramWebApp) {
+                    telegramWebApp.openTelegramLink(link);
+                } else {
+                    showToast('📲 Откройте ссылку в Telegram', 'info');
+                }
+                
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
             
             document.getElementById('referralTermsBtn').addEventListener('click', function() {
-                showToast('Реферальная программа в разработке', 'warning');
+                showToast('📋 Реферальная программа скоро будет доступна', 'info');
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
             
             document.getElementById('addBalanceBtn').addEventListener('click', function() {
-                showToast('Пополнение баланса в разработке', 'info');
+                showToast('💰 Пополнение баланса скоро будет доступно', 'info');
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
             
             document.getElementById('withdrawBtn').addEventListener('click', function() {
-                showToast('Вывод средств временно отключен', 'error');
+                showToast('🚫 Вывод средств временно отключен', 'error');
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
             
             document.getElementById('retryBtn').addEventListener('click', function() {
                 hideError();
                 loadMarketNFTs();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
             });
             
             document.getElementById('retryGiftsBtn')?.addEventListener('click', function() {
                 document.getElementById('giftsErrorContainer').classList.add('hidden');
                 loadUserNFTs();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+            
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                if (currentScreen === 'market') {
+                    loadMarketNFTs();
+                    showToast('🔄 Обновляем...', 'info');
+                } else if (currentScreen === 'gifts') {
+                    loadUserNFTs();
+                    showToast('🔄 Обновляем...', 'info');
+                }
+                this.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 500);
             });
             
             // Поиск
             let searchTimeout;
-            document.getElementById('searchInput').addEventListener('input', async function(e) {
+            document.getElementById('searchInput').addEventListener('input', function(e) {
                 clearTimeout(searchTimeout);
                 const searchTerm = e.target.value.trim();
                 
                 if (searchTerm.length >= 2) {
-                    searchTimeout = setTimeout(async () => {
-                        showToast(`Поиск: ${searchTerm}`, 'info');
-                        const results = await searchNFTs({ query: searchTerm });
-                        if (results.length > 0) {
-                            displayNFTs(results, document.getElementById('nftGrid'), false);
-                        }
+                    searchTimeout = setTimeout(() => {
+                        showToast(`🔍 Ищем: ${searchTerm}`, 'info');
                     }, 500);
                 }
-            });
-            
-            // Фильтры
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                    // Здесь будет логика фильтрации через API
-                });
-            });
-            
-            // Переключатель
-            document.querySelectorAll('.toggle-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if (this.classList.contains('active')) return;
-                    
-                    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const tab = this.dataset.tab;
-                    // Здесь будет логика переключения между маркетом и листингом
-                });
             });
             
             // Анимация нажатия кнопок
             document.addEventListener('mousedown', function(e) {
                 if (e.target.closest('button') && !e.target.closest('button').disabled) {
-                    e.target.closest('button').style.transform = 'scale(0.98)';
+                    const btn = e.target.closest('button');
+                    btn.style.transform = 'scale(0.95)';
                 }
             });
             
             document.addEventListener('mouseup', function(e) {
                 if (e.target.closest('button')) {
-                    e.target.closest('button').style.transform = '';
+                    const btn = e.target.closest('button');
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 150);
                 }
             });
             
             document.addEventListener('touchstart', function(e) {
                 if (e.target.closest('button') && !e.target.closest('button').disabled) {
-                    e.target.closest('button').style.transform = 'scale(0.98)';
+                    const btn = e.target.closest('button');
+                    btn.style.transform = 'scale(0.95)';
                 }
             }, { passive: true });
             
             document.addEventListener('touchend', function(e) {
                 if (e.target.closest('button')) {
-                    e.target.closest('button').style.transform = '';
+                    const btn = e.target.closest('button');
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 150);
                 }
             }, { passive: true });
         });
         
-        // Экспорт функций для Telegram
-        window.sendDataToTelegram = function(data) {
-            if (telegramWebApp) {
-                telegramWebApp.sendData(JSON.stringify(data));
-                return true;
-            }
-            return false;
+        // Экспорт функций для отладки
+        window.debug = {
+            reloadNFTs: loadMarketNFTs,
+            reloadUserNFTs: loadUserNFTs,
+            reloadBalance: loadWalletBalanceAPI,
+            getUser: () => currentUser,
+            getScreen: () => currentScreen,
+            showToast: showToast
         };
         
-        window.closeApp = function() {
-            if (telegramWebApp) {
-                telegramWebApp.close();
-            }
-        };
+        console.log("🎮 Отладка доступна через window.debug");
     </script>
 </body>
 </html>
