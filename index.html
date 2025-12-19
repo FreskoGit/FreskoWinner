@@ -232,7 +232,7 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -244,23 +244,61 @@
             height: 60px;
             flex-shrink: 0;
             position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            background-color: #4a4849;
+        }
+        
+        .btn:active {
+            transform: translateY(0) scale(0.98);
+            transition: all 0.1s ease;
         }
         
         .btn-red {
             background-color: #d32f2f;
         }
         
+        .btn-red:hover {
+            background-color: #e53935;
+        }
+        
         .btn-icon {
             font-size: 20px;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover .btn-icon {
+            transform: scale(1.1);
         }
         
         .btn span {
             font-size: 15px;
             flex-shrink: 0;
+            position: relative;
+            z-index: 1;
         }
         
-        /* Стили для кнопки со стрелкой - ИСПРАВЛЕННЫЕ */
+        /* Стили для кнопки со стрелкой */
         .toggle-btn-wrapper {
             position: relative;
             width: 100%;
@@ -281,14 +319,19 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         
         .toggle-btn:hover {
             background-color: rgba(211, 47, 47, 0.9);
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .toggle-btn:active {
+            transform: translateY(-50%) scale(0.95);
         }
         
         .toggle-btn i {
@@ -321,7 +364,7 @@
             left: 15px;
             width: 40px;
             height: 40px;
-            background-color: rgba(61, 59, 60, 0.8);
+            background-color: rgba(61, 59, 60, 0.9);
             border: 1px solid #444;
             border-radius: 50%;
             display: flex;
@@ -329,15 +372,24 @@
             justify-content: center;
             cursor: pointer;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             color: white;
             font-size: 18px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
         .sound-toggle:hover {
-            background-color: rgba(211, 47, 47, 0.8);
-            transform: scale(1.1);
+            background-color: rgba(211, 47, 47, 0.9);
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .sound-toggle:active {
+            transform: scale(0.95);
+        }
+        
+        .sound-toggle.muted {
+            background-color: rgba(61, 59, 60, 0.7);
         }
         
         .sound-toggle.muted i {
@@ -378,6 +430,26 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
         }
         
         .no-scroll {
@@ -754,29 +826,60 @@
         
         // Глобальные переменные для музыки
         let backgroundMusic;
-        let isMusicPlaying = true;
+        let isMusicPlaying = false; // Начинаем с выключенной музыки
         
         document.addEventListener('DOMContentLoaded', function() {
             // Инициализация музыки
             backgroundMusic = document.getElementById('background-music');
             const soundToggle = document.getElementById('soundToggle');
             
+            // Проверяем состояние звука из localStorage
+            const isMuted = localStorage.getItem('fresko_music_muted');
+            
+            // Если в localStorage нет значения или оно false, включаем музыку
+            if (isMuted === null || isMuted === 'false') {
+                isMusicPlaying = true;
+                localStorage.setItem('fresko_music_muted', 'false');
+            } else {
+                isMusicPlaying = false;
+            }
+            
             // Функция запуска музыки
             function startMusic() {
-                if (backgroundMusic) {
+                if (backgroundMusic && isMusicPlaying) {
                     backgroundMusic.volume = 0.5; // Устанавливаем громкость 50%
-                    backgroundMusic.play().catch(e => {
-                        console.log("Автовоспроизведение музыки заблокировано:", e.message);
-                        // Показываем кнопку для взаимодействия пользователя
-                        soundToggle.style.display = 'flex';
-                    });
                     
-                    // Проверяем состояние звука из localStorage
-                    const isMuted = localStorage.getItem('fresko_music_muted') === 'true';
-                    if (isMuted) {
+                    // Создаем промис для автовоспроизведения
+                    const playPromise = backgroundMusic.play();
+                    
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            console.log("Автовоспроизведение музыки заблокировано:", e.message);
+                            // Показываем кнопку для взаимодействия пользователя
+                            soundToggle.style.display = 'flex';
+                            
+                            // Добавляем обработчик клика по документу для разблокировки аудио
+                            const unlockAudio = () => {
+                                if (backgroundMusic.paused) {
+                                    backgroundMusic.play().then(() => {
+                                        console.log("Музыка запущена после взаимодействия");
+                                        document.removeEventListener('click', unlockAudio);
+                                        document.removeEventListener('touchstart', unlockAudio);
+                                    }).catch(err => {
+                                        console.log("Не удалось запустить музыку:", err.message);
+                                    });
+                                }
+                            };
+                            
+                            document.addEventListener('click', unlockAudio);
+                            document.addEventListener('touchstart', unlockAudio);
+                        });
+                    }
+                    
+                    // Устанавливаем начальное состояние кнопки
+                    if (!isMusicPlaying) {
                         backgroundMusic.muted = true;
                         soundToggle.classList.add('muted');
-                        isMusicPlaying = false;
                     }
                 }
             }
@@ -784,6 +887,13 @@
             // Функция переключения звука
             function toggleSound() {
                 if (backgroundMusic) {
+                    // Если музыка на паузе, сначала попробуем воспроизвести
+                    if (backgroundMusic.paused && isMusicPlaying) {
+                        backgroundMusic.play().catch(e => {
+                            console.log("Не удалось возобновить музыку:", e.message);
+                        });
+                    }
+                    
                     isMusicPlaying = !isMusicPlaying;
                     backgroundMusic.muted = !isMusicPlaying;
                     
@@ -794,27 +904,75 @@
                         soundToggle.classList.add('muted');
                         localStorage.setItem('fresko_music_muted', 'true');
                     }
-                    
-                    // Если музыка была остановлена и пользователь включает звук
-                    if (isMusicPlaying && backgroundMusic.paused) {
-                        backgroundMusic.play().catch(e => {
-                            console.log("Не удалось возобновить музыку:", e.message);
-                        });
-                    }
                 }
             }
             
+            // Устанавливаем начальное состояние кнопки звука
+            if (!isMusicPlaying) {
+                soundToggle.classList.add('muted');
+            }
+            
             // Обработчик клика на кнопку звука
-            soundToggle.addEventListener('click', toggleSound);
-            soundToggle.addEventListener('touchstart', function(e) {
+            soundToggle.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 toggleSound();
             });
             
-            // Сразу запускаем музыку и инициализируем контент
+            soundToggle.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleSound();
+            });
+            
+            // Сразу запускаем музыку (если она включена) и инициализируем контент
             startMusic();
             initializeContent();
+            
+            // Добавляем риппл-эффект для кнопок
+            addRippleEffect();
         });
+        
+        // Функция для добавления риппл-эффекта
+        function addRippleEffect() {
+            document.querySelectorAll('.btn, .toggle-btn, .sound-toggle').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple-effect');
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+                
+                // Для touch устройств
+                button.addEventListener('touchstart', function(e) {
+                    const touch = e.touches[0];
+                    const rect = this.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple-effect');
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        }
         
         async function initializeContent() {
             const IMAGE_PATHS = {
@@ -887,80 +1045,49 @@
                 });
             }
             
-            // Генерация уникального ID посетителя
-            function generateVisitorId() {
-                const storedId = localStorage.getItem('fresko_visitor_id');
-                if (storedId) return storedId;
-                
-                const newId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('fresko_visitor_id', newId);
-                return newId;
+            // Генерация уникального ID посещения (каждый раз новый)
+            function generateVisitId() {
+                return 'visit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 12);
             }
             
-            // ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СЧЕТЧИКА
+            // ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СЧЕТЧИКА - КАЖДЫЙ ВХОД СЧИТАЕТСЯ
             async function updateVisitCounter() {
                 try {
-                    const visitorId = generateVisitorId();
+                    // Сразу увеличиваем локальный счетчик
+                    incrementLocalCounter();
                     
-                    // Проверяем, был ли уже этот посетитель сегодня
-                    const today = new Date().toISOString().split('T')[0];
-                    const visitKey = `fresko_visit_${today}`;
+                    // Отправляем посещение в Supabase
+                    const visitId = generateVisitId();
                     
-                    // Получаем текущее время для проверки
-                    const now = new Date();
-                    const currentHour = now.getHours();
-                    
-                    // Создаем ключ с учетом часа, чтобы обновлять раз в час
-                    const hourlyKey = `fresko_visit_${today}_${currentHour}`;
-                    
-                    if (!localStorage.getItem(hourlyKey)) {
-                        // Отмечаем посещение на этот час
-                        localStorage.setItem(hourlyKey, 'true');
-                        
-                        // Проверяем, существует ли уже запись для этого посетителя
-                        const { data: existingVisit, error: checkError } = await supabase
-                            .from('visits')
-                            .select('*')
-                            .eq('visitor_id', visitorId)
-                            .gte('visited_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-                            .limit(1);
-                        
-                        if (checkError) {
-                            console.warn('Ошибка проверки существующего посещения:', checkError);
-                        }
-                        
-                        // Если нет посещения за последние 24 часа, добавляем новое
-                        if (!existingVisit || existingVisit.length === 0) {
-                            const { error } = await supabase
-                                .from('visits')
-                                .insert([{
-                                    visitor_id: visitorId,
-                                    visited_at: new Date().toISOString()
-                                }]);
-                            
-                            if (error) {
-                                console.warn('Ошибка записи в Supabase:', error);
-                                // Используем локальный счетчик как запасной вариант
-                                return incrementLocalCounter();
-                            }
-                        }
-                    }
-                    
-                    // Получаем общее количество уникальных посещений
-                    const { data, error } = await supabase
+                    const { error } = await supabase
                         .from('visits')
-                        .select('visitor_id', { count: 'exact' });
+                        .insert([{
+                            visitor_id: visitId,
+                            visited_at: new Date().toISOString(),
+                            is_unique: false // Помечаем как не уникальное (все посещения считаются)
+                        }]);
                     
                     if (error) {
-                        console.warn('Ошибка чтения из Supabase:', error);
+                        console.warn('Ошибка записи в Supabase:', error);
+                        // Используем только локальный счетчик
                         return getLocalCounter();
                     }
                     
-                    // Если data - это массив объектов
-                    if (data && Array.isArray(data)) {
-                        // Подсчитываем уникальных посетителей
-                        const uniqueVisitors = new Set(data.map(item => item.visitor_id));
-                        return uniqueVisitors.size;
+                    // Получаем общее количество ВСЕХ посещений
+                    const { data, error: countError } = await supabase
+                        .from('visits')
+                        .select('*', { count: 'exact', head: true });
+                    
+                    if (countError) {
+                        console.warn('Ошибка чтения из Supabase:', countError);
+                        return getLocalCounter();
+                    }
+                    
+                    // Если data содержит count, используем его
+                    if (data !== null && data !== undefined) {
+                        // Для head запросов data может быть числом или объектом
+                        const count = typeof data === 'number' ? data : (data.count || data.length || 0);
+                        return Math.max(count, getLocalCounter());
                     }
                     
                     return getLocalCounter();
@@ -973,18 +1100,18 @@
             
             // Локальный счетчик (запасной вариант)
             function getLocalCounter() {
-                let count = localStorage.getItem('fresko_counter');
+                let count = localStorage.getItem('fresko_counter_all');
                 if (!count) {
                     count = 1;
-                    localStorage.setItem('fresko_counter', count);
+                    localStorage.setItem('fresko_counter_all', count);
                 }
                 return parseInt(count);
             }
             
             function incrementLocalCounter() {
-                let count = localStorage.getItem('fresko_counter');
+                let count = localStorage.getItem('fresko_counter_all');
                 count = count ? parseInt(count) + 1 : 1;
-                localStorage.setItem('fresko_counter', count);
+                localStorage.setItem('fresko_counter_all', count);
                 return count;
             }
             
@@ -994,12 +1121,6 @@
                 const totalVisits = await updateVisitCounter();
                 console.log('Получено посещений:', totalVisits);
                 displayCounter(totalVisits);
-                
-                // Обновляем счетчик каждые 30 секунд
-                setInterval(async () => {
-                    const updatedVisits = await updateVisitCounter();
-                    displayCounter(updatedVisits);
-                }, 30000);
                 
             } catch (error) {
                 console.error('Ошибка инициализации счетчика:', error);
@@ -1016,20 +1137,6 @@
                 const intensity = 0.1 + Math.random() * 0.1;
                 avatar.style.boxShadow = `0 0 ${30 + Math.random() * 20}px rgba(255, 255, 255, ${intensity})`;
             }, 2000);
-            
-            // Эффекты кнопок
-            document.querySelectorAll('.btn').forEach(btn => {
-                const events = {
-                    mousedown: () => { btn.style.transform = 'scale(0.98)'; btn.style.opacity = '0.9'; },
-                    mouseup: () => { btn.style.transform = ''; btn.style.opacity = ''; },
-                    touchstart: () => { btn.style.transform = 'scale(0.98)'; btn.style.opacity = '0.9'; },
-                    touchend: () => { btn.style.transform = ''; btn.style.opacity = ''; }
-                };
-                
-                Object.entries(events).forEach(([event, handler]) => {
-                    btn.addEventListener(event, handler);
-                });
-            });
             
             // Управление кнопкой-стрелкой и переключением кнопок
             const toggleBtn = document.getElementById('toggleBtn');
