@@ -106,7 +106,6 @@
         let backgroundMusic;
         let isMusicPlaying = true;
         let supabaseClient = null;
-        let totalVisits = 0;
 
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -144,7 +143,7 @@
                     soundToggle.addEventListener('click', toggleMusic);
                 }
                 
-                await initCounter();
+                await updateCounter();
                 
                 const avatarVideo = document.querySelector('.avatar-video');
                 const avatarImage = document.querySelector('.avatar-image');
@@ -168,8 +167,7 @@
                 
             } catch (error) {
                 console.error('Ошибка инициализации:', error);
-                totalVisits = parseInt(localStorage.getItem('fresko_total_visits') || '123');
-                animateCounter(0, totalVisits);
+                animateCounter(123);
             }
         });
 
@@ -190,43 +188,26 @@
             }
         }
 
-        async function initCounter() {
-            try {
-                await increaseCounter();
-                
-                totalVisits = await getTotalVisits();
-                animateCounter(0, totalVisits);
-                
-            } catch (error) {
-                console.error('Ошибка счетчика:', error);
-                totalVisits = parseInt(localStorage.getItem('fresko_total_visits') || '123');
-                animateCounter(0, totalVisits);
-            }
-        }
-
-        async function increaseCounter() {
+        async function updateCounter() {
             try {
                 if (!supabaseClient) {
-                    let localCount = parseInt(localStorage.getItem('fresko_total_visits') || '0');
-                    localCount++;
-                    localStorage.setItem('fresko_total_visits', localCount.toString());
+                    console.warn('Supabase не подключен');
                     return;
                 }
                 
-                const { data, error } = await supabaseClient.rpc('increment_visits');
+                const { error } = await supabaseClient.rpc('increment_visits');
                 
                 if (error) {
-                    console.warn('Ошибка RPC, пробуем через update:', error.message);
+                    console.warn('Ошибка RPC:', error.message);
                     await updateCounterDirectly();
-                } else {
-                    console.log('✅ Счетчик увеличен через RPC');
                 }
                 
+                const totalVisits = await getTotalVisits();
+                animateCounter(totalVisits);
+                
             } catch (error) {
-                console.error('Ошибка увеличения счетчика:', error);
-                let localCount = parseInt(localStorage.getItem('fresko_total_visits') || '0');
-                localCount++;
-                localStorage.setItem('fresko_total_visits', localCount.toString());
+                console.error('Ошибка счетчика:', error);
+                animateCounter(123);
             }
         }
 
@@ -238,7 +219,7 @@
                     .eq('id', 1)
                     .single();
                 
-                if (fetchError && fetchError.code === 'PGRST116') {
+                if (fetchError) {
                     await supabaseClient
                         .from('counter')
                         .insert({ id: 1, value: 1 });
@@ -251,41 +232,31 @@
                 }
                 
             } catch (error) {
-                console.error('Ошибка прямого обновления счетчика:', error);
-                throw error;
+                console.error('Ошибка прямого обновления:', error);
             }
         }
 
         async function getTotalVisits() {
             try {
-                if (!supabaseClient) {
-                    const localCount = parseInt(localStorage.getItem('fresko_total_visits') || '123');
-                    return Math.max(localCount, 1);
-                }
-                
                 const { data, error } = await supabaseClient
                     .from('counter')
                     .select('value')
                     .eq('id', 1)
                     .single();
                 
-                if (error && error.code === 'PGRST116') {
-                    await supabaseClient
-                        .from('counter')
-                        .insert({ id: 1, value: 1 });
+                if (error || !data) {
                     return 1;
                 }
                 
-                return Math.max(data?.value || 1, 1);
+                return Math.max(data.value, 1);
                 
             } catch (error) {
-                console.warn('Ошибка получения счетчика:', error.message);
-                const localCount = parseInt(localStorage.getItem('fresko_total_visits') || '123');
-                return Math.max(localCount, 1);
+                console.warn('Ошибка получения счетчика:', error);
+                return 123;
             }
         }
 
-        function animateCounter(start, end) {
+        function animateCounter(end) {
             const counterDisplay = document.getElementById('counterDisplay');
             if (!counterDisplay) return;
             
@@ -303,12 +274,12 @@
                 digitElements.push(digitElement);
             }
             
-            animateValue(start, end, digitElements);
+            animateValue(0, end, digitElements);
         }
 
         function animateValue(start, end, digitElements) {
             let startTimestamp = null;
-            const duration = calculateDuration(start, end);
+            const duration = 1200;
             
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
@@ -323,13 +294,6 @@
             };
             
             window.requestAnimationFrame(step);
-        }
-
-        function calculateDuration(start, end) {
-            const difference = end - start;
-            const baseDuration = 1200;
-            const speedFactor = Math.max(0.4, Math.min(1, 500 / difference));
-            return baseDuration * speedFactor;
         }
 
         function updateDigits(value, digitElements) {
