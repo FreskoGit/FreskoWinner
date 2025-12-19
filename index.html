@@ -298,65 +298,6 @@
             z-index: 1;
         }
         
-        /* Стили для кнопки со стрелкой */
-        .toggle-btn-wrapper {
-            position: relative;
-            width: 100%;
-        }
-        
-        .toggle-btn {
-            position: absolute;
-            right: -15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(61, 59, 60, 0.9);
-            color: white;
-            border: 1px solid #444;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .toggle-btn:hover {
-            background-color: rgba(211, 47, 47, 0.9);
-            transform: translateY(-50%) scale(1.15);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-        }
-        
-        .toggle-btn:active {
-            transform: translateY(-50%) scale(0.95);
-        }
-        
-        .toggle-btn i {
-            font-size: 14px;
-            transition: transform 0.3s ease;
-        }
-        
-        .toggle-btn.rotated i {
-            transform: rotate(180deg);
-        }
-        
-        /* Стили для скрытой кнопки "Мой лс" */
-        .btn-ls {
-            display: none;
-        }
-        
-        .btn-ls.show {
-            display: flex !important;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .btn-chat.hide {
-            display: none !important;
-        }
-        
         /* Кнопка выключения звука */
         .sound-toggle {
             position: fixed;
@@ -406,6 +347,65 @@
             background-color: #d32f2f;
             transform: translate(-50%, -50%) rotate(45deg);
             border-radius: 1px;
+        }
+        
+        /* Модальное окно для запроса разрешений */
+        .permission-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .permission-content {
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .permission-content h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .permission-content p {
+            color: #aaa;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        
+        .permission-btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .permission-btn:hover {
+            background-color: #e53935;
+            transform: translateY(-2px);
         }
         
         @keyframes gentle-pulse {
@@ -508,22 +508,24 @@
                 font-size: 14px;
             }
             
-            .toggle-btn {
-                right: -12px;
-                width: 28px;
-                height: 28px;
-            }
-            
-            .toggle-btn i {
-                font-size: 12px;
-            }
-            
             .sound-toggle {
                 width: 36px;
                 height: 36px;
                 font-size: 16px;
                 top: 12px;
                 left: 12px;
+            }
+            
+            .permission-content {
+                padding: 20px;
+            }
+            
+            .permission-content h2 {
+                font-size: 20px;
+            }
+            
+            .permission-content p {
+                font-size: 14px;
             }
         }
         
@@ -593,16 +595,6 @@
                 font-size: 13px;
             }
             
-            .toggle-btn {
-                right: -10px;
-                width: 26px;
-                height: 26px;
-            }
-            
-            .toggle-btn i {
-                font-size: 11px;
-            }
-            
             .sound-toggle {
                 width: 34px;
                 height: 34px;
@@ -667,16 +659,6 @@
                 max-width: 260px;
             }
             
-            .toggle-btn {
-                right: -8px;
-                width: 24px;
-                height: 24px;
-            }
-            
-            .toggle-btn i {
-                font-size: 10px;
-            }
-            
             .sound-toggle {
                 width: 30px;
                 height: 30px;
@@ -701,10 +683,6 @@
                 max-width: none;
                 width: auto;
                 flex: 1;
-            }
-            
-            .toggle-btn-wrapper {
-                grid-column: span 2;
             }
             
             .sound-toggle {
@@ -734,6 +712,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="no-scroll no-select">
+    <!-- Модальное окно для запроса разрешений -->
+    <div id="permissionModal" class="permission-modal" style="display: none;">
+        <div class="permission-content">
+            <h2>Разрешите автовоспроизведение</h2>
+            <p>Для полного функционирования сайта, пожалуйста, разрешите автовоспроизведение музыки и видео. Это необходимо для:</p>
+            <ul style="text-align: left; margin: 15px 0; color: #ccc;">
+                <li>Фоновой музыки</li>
+                <li>Анимированного аватара</li>
+                <li>Фонового видео</li>
+            </ul>
+            <p>Нажмите "Разрешить", чтобы продолжить.</p>
+            <button id="allowPermissions" class="permission-btn">Разрешить</button>
+        </div>
+    </div>
+    
     <!-- Аудио элемент для фоновой музыки -->
     <audio id="background-music" loop>
         <source src="Top.mp3" type="audio/mpeg">
@@ -750,7 +743,7 @@
         Ваш браузер не поддерживает видео.
     </video>
     
-    <div class="container" id="mainContainer">
+    <div class="container" id="mainContainer" style="display: none;">
         <div class="avatar-section">
             <div class="avatar-container">
                 <video class="avatar-video" autoplay loop muted playsinline>
@@ -795,20 +788,14 @@
                 <span>Проекты</span>
             </a>
             
-            <!-- Кнопка "Чат общения" с оберткой для стрелки -->
-            <div class="toggle-btn-wrapper">
-                <a href="https://t.me/FreskoChats" target="_blank" class="btn btn-chat" id="chatBtn">
-                    <i class="fas fa-comments btn-icon"></i>
-                    <span>Чат общения</span>
-                </a>
-                <!-- Кнопка-стрелка теперь внутри обертки -->
-                <button class="toggle-btn" id="toggleBtn">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+            <!-- Кнопка "Чат общения" (без стрелки) -->
+            <a href="https://t.me/FreskoChats" target="_blank" class="btn">
+                <i class="fas fa-comments btn-icon"></i>
+                <span>Чат общения</span>
+            </a>
             
-            <!-- Скрытая кнопка "Мой лс" -->
-            <a href="https://t.me/FreskoWIN" target="_blank" class="btn btn-ls" id="lsBtn">
+            <!-- Кнопка "Мой лс" -->
+            <a href="https://t.me/FreskoWIN" target="_blank" class="btn">
                 <i class="fas fa-user-circle btn-icon"></i>
                 <span>Мой лс</span>
             </a>
@@ -824,82 +811,148 @@
         // Инициализация Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // Глобальные переменные для музыки
+        // Глобальные переменные
         let backgroundMusic;
-        let isMusicPlaying = false; // Начинаем с выключенной музыки
+        let isMusicPlaying = true;
+        let permissionsGranted = false;
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Инициализация музыки
-            backgroundMusic = document.getElementById('background-music');
+            const permissionModal = document.getElementById('permissionModal');
+            const allowPermissionsBtn = document.getElementById('allowPermissions');
             const soundToggle = document.getElementById('soundToggle');
+            const mainContainer = document.getElementById('mainContainer');
             
-            // Проверяем состояние звука из localStorage
-            const isMuted = localStorage.getItem('fresko_music_muted');
+            // Проверяем, были ли уже разрешены права
+            const permissionsGiven = localStorage.getItem('fresko_permissions_given') === 'true';
             
-            // Если в localStorage нет значения или оно false, включаем музыку
-            if (isMuted === null || isMuted === 'false') {
-                isMusicPlaying = true;
-                localStorage.setItem('fresko_music_muted', 'false');
+            if (permissionsGiven) {
+                // Если права уже были даны, сразу запускаем все
+                startMedia();
+                mainContainer.style.display = 'flex';
             } else {
-                isMusicPlaying = false;
+                // Показываем модальное окно с запросом разрешений
+                permissionModal.style.display = 'flex';
+                mainContainer.style.display = 'none';
             }
             
-            // Функция запуска музыки
-            function startMusic() {
-                if (backgroundMusic && isMusicPlaying) {
-                    backgroundMusic.volume = 0.5; // Устанавливаем громкость 50%
+            // Обработчик кнопки разрешения
+            allowPermissionsBtn.addEventListener('click', function() {
+                permissionModal.style.display = 'none';
+                mainContainer.style.display = 'flex';
+                localStorage.setItem('fresko_permissions_given', 'true');
+                permissionsGranted = true;
+                startMedia();
+            });
+            
+            // Инициализация музыки
+            backgroundMusic = document.getElementById('background-music');
+            
+            // Проверяем состояние звука из localStorage
+            const isMuted = localStorage.getItem('fresko_music_muted') === 'true';
+            
+            // Функция запуска всех медиа
+            async function startMedia() {
+                try {
+                    // Запускаем видео
+                    const bgVideo = document.getElementById('background-video');
+                    const avatarVideo = document.querySelector('.avatar-video');
                     
-                    // Создаем промис для автовоспроизведения
-                    const playPromise = backgroundMusic.play();
+                    [bgVideo, avatarVideo].forEach(video => {
+                        if (video) {
+                            video.play().catch(e => {
+                                console.log("Ошибка воспроизведения видео:", e.message);
+                            });
+                        }
+                    });
                     
-                    if (playPromise !== undefined) {
-                        playPromise.catch(e => {
-                            console.log("Автовоспроизведение музыки заблокировано:", e.message);
-                            // Показываем кнопку для взаимодействия пользователя
-                            soundToggle.style.display = 'flex';
-                            
-                            // Добавляем обработчик клика по документу для разблокировки аудио
-                            const unlockAudio = () => {
-                                if (backgroundMusic.paused) {
+                    // Запускаем музыку
+                    if (backgroundMusic) {
+                        backgroundMusic.volume = 0.5;
+                        
+                        // Создаем контекст аудио для разблокировки
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        const audioContext = new AudioContext();
+                        
+                        // Восстанавливаем контекст при взаимодействии
+                        const resumeAudio = () => {
+                            if (audioContext.state === 'suspended') {
+                                audioContext.resume();
+                            }
+                        };
+                        
+                        // Добавляем обработчики для разблокировки аудио
+                        document.addEventListener('click', resumeAudio);
+                        document.addEventListener('touchstart', resumeAudio);
+                        
+                        // Пытаемся воспроизвести музыку
+                        const playPromise = backgroundMusic.play();
+                        
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                console.log("Музыка успешно запущена");
+                                // Устанавливаем состояние звука из localStorage
+                                if (isMuted) {
+                                    backgroundMusic.muted = true;
+                                    soundToggle.classList.add('muted');
+                                    isMusicPlaying = false;
+                                } else {
+                                    backgroundMusic.muted = false;
+                                    soundToggle.classList.remove('muted');
+                                    isMusicPlaying = true;
+                                }
+                            }).catch(e => {
+                                console.log("Ошибка воспроизведения музыки:", e.message);
+                                // Если не удалось, показываем кнопку и пробуем при следующем взаимодействии
+                                const tryPlayOnInteraction = () => {
                                     backgroundMusic.play().then(() => {
                                         console.log("Музыка запущена после взаимодействия");
-                                        document.removeEventListener('click', unlockAudio);
-                                        document.removeEventListener('touchstart', unlockAudio);
+                                        if (isMuted) {
+                                            backgroundMusic.muted = true;
+                                            soundToggle.classList.add('muted');
+                                            isMusicPlaying = false;
+                                        } else {
+                                            backgroundMusic.muted = false;
+                                            soundToggle.classList.remove('muted');
+                                            isMusicPlaying = true;
+                                        }
+                                        document.removeEventListener('click', tryPlayOnInteraction);
+                                        document.removeEventListener('touchstart', tryPlayOnInteraction);
                                     }).catch(err => {
                                         console.log("Не удалось запустить музыку:", err.message);
                                     });
-                                }
-                            };
-                            
-                            document.addEventListener('click', unlockAudio);
-                            document.addEventListener('touchstart', unlockAudio);
-                        });
+                                };
+                                
+                                document.addEventListener('click', tryPlayOnInteraction);
+                                document.addEventListener('touchstart', tryPlayOnInteraction);
+                            });
+                        }
                     }
                     
-                    // Устанавливаем начальное состояние кнопки
-                    if (!isMusicPlaying) {
-                        backgroundMusic.muted = true;
-                        soundToggle.classList.add('muted');
-                    }
+                    // Инициализируем остальной контент
+                    initializeContent();
+                    
+                } catch (error) {
+                    console.error("Ошибка при запуске медиа:", error);
+                    initializeContent();
                 }
             }
             
             // Функция переключения звука
             function toggleSound() {
                 if (backgroundMusic) {
-                    // Если музыка на паузе, сначала попробуем воспроизвести
-                    if (backgroundMusic.paused && isMusicPlaying) {
-                        backgroundMusic.play().catch(e => {
-                            console.log("Не удалось возобновить музыку:", e.message);
-                        });
-                    }
-                    
                     isMusicPlaying = !isMusicPlaying;
                     backgroundMusic.muted = !isMusicPlaying;
                     
                     if (isMusicPlaying) {
                         soundToggle.classList.remove('muted');
                         localStorage.setItem('fresko_music_muted', 'false');
+                        
+                        // Если музыка на паузе, пробуем воспроизвести
+                        if (backgroundMusic.paused) {
+                            backgroundMusic.play().catch(e => {
+                                console.log("Не удалось возобновить музыку:", e.message);
+                            });
+                        }
                     } else {
                         soundToggle.classList.add('muted');
                         localStorage.setItem('fresko_music_muted', 'true');
@@ -908,8 +961,9 @@
             }
             
             // Устанавливаем начальное состояние кнопки звука
-            if (!isMusicPlaying) {
+            if (isMuted) {
                 soundToggle.classList.add('muted');
+                isMusicPlaying = false;
             }
             
             // Обработчик клика на кнопку звука
@@ -925,17 +979,13 @@
                 toggleSound();
             });
             
-            // Сразу запускаем музыку (если она включена) и инициализируем контент
-            startMusic();
-            initializeContent();
-            
             // Добавляем риппл-эффект для кнопок
             addRippleEffect();
         });
         
         // Функция для добавления риппл-эффекта
         function addRippleEffect() {
-            document.querySelectorAll('.btn, .toggle-btn, .sound-toggle').forEach(button => {
+            document.querySelectorAll('.btn, .sound-toggle, #allowPermissions').forEach(button => {
                 button.addEventListener('click', function(e) {
                     const rect = this.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -980,21 +1030,12 @@
                 5: '5.png', 6: '6.png', 7: '7.png', 8: '8.png', 9: '9.png'
             };
             
-            // Проверка поддержки видео формата и автоматическое переключение на фото при ошибке
+            // Проверка поддержки видео формата
             function checkVideoSupport() {
                 const avatarVideo = document.querySelector('.avatar-video');
                 const avatarImage = document.getElementById('avatarImage');
                 
-                // Проверяем, может ли браузер воспроизвести видео
-                const video = document.createElement('video');
-                const canPlayMP4 = video.canPlayType && video.canPlayType('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
-                
-                if (!canPlayMP4) {
-                    // Браузер не поддерживает видео, показываем фото
-                    avatarVideo.style.display = 'none';
-                    avatarImage.style.display = 'block';
-                    return;
-                }
+                if (!avatarVideo || !avatarImage) return;
                 
                 // Проверяем, загружается ли видео
                 avatarVideo.addEventListener('error', function() {
@@ -1010,12 +1051,14 @@
                         avatarVideo.style.display = 'none';
                         avatarImage.style.display = 'block';
                     }
-                }, 3000); // Даем 3 секунды на загрузку
+                }, 3000);
             }
             
             // Функция отображения счетчика
             function displayCounter(number) {
                 const display = document.getElementById('counterDisplay');
+                if (!display) return;
+                
                 display.innerHTML = '';
                 
                 const digits = number.toString().split('');
@@ -1045,55 +1088,64 @@
                 });
             }
             
-            // Генерация уникального ID посещения (каждый раз новый)
+            // Генерация ID посещения
             function generateVisitId() {
                 return 'visit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 12);
             }
             
-            // ОСНОВНАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СЧЕТЧИКА - КАЖДЫЙ ВХОД СЧИТАЕТСЯ
+            // ОБНОВЛЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СЧЕТЧИКА - БОЛЕЕ НАДЕЖНАЯ
             async function updateVisitCounter() {
                 try {
-                    // Сразу увеличиваем локальный счетчик
+                    // Создаем уникальный ID для этого посещения
+                    const visitId = generateVisitId();
+                    
+                    // Записываем посещение локально сразу
                     incrementLocalCounter();
                     
                     // Отправляем посещение в Supabase
-                    const visitId = generateVisitId();
-                    
                     const { error } = await supabase
                         .from('visits')
                         .insert([{
                             visitor_id: visitId,
                             visited_at: new Date().toISOString(),
-                            is_unique: false // Помечаем как не уникальное (все посещения считаются)
+                            is_unique: false
                         }]);
                     
                     if (error) {
                         console.warn('Ошибка записи в Supabase:', error);
-                        // Используем только локальный счетчик
+                        // Возвращаем локальный счетчик
                         return getLocalCounter();
                     }
                     
-                    // Получаем общее количество ВСЕХ посещений
-                    const { data, error: countError } = await supabase
-                        .from('visits')
-                        .select('*', { count: 'exact', head: true });
-                    
-                    if (countError) {
-                        console.warn('Ошибка чтения из Supabase:', countError);
-                        return getLocalCounter();
+                    // Пытаемся получить общее количество посещений из Supabase
+                    try {
+                        // Способ 1: Используем count
+                        const { count, error: countError } = await supabase
+                            .from('visits')
+                            .select('*', { count: 'exact', head: true });
+                        
+                        if (!countError && count !== null) {
+                            return Math.max(count, getLocalCounter());
+                        }
+                        
+                        // Способ 2: Если способ 1 не работает, пробуем получить все записи
+                        const { data, error: dataError } = await supabase
+                            .from('visits')
+                            .select('id');
+                        
+                        if (!dataError && data) {
+                            return Math.max(data.length, getLocalCounter());
+                        }
+                        
+                    } catch (countErr) {
+                        console.warn('Ошибка получения количества:', countErr);
                     }
                     
-                    // Если data содержит count, используем его
-                    if (data !== null && data !== undefined) {
-                        // Для head запросов data может быть числом или объектом
-                        const count = typeof data === 'number' ? data : (data.count || data.length || 0);
-                        return Math.max(count, getLocalCounter());
-                    }
-                    
+                    // Если все способы не сработали, используем локальный счетчик
                     return getLocalCounter();
                     
                 } catch (error) {
-                    console.error('Критическая ошибка:', error);
+                    console.error('Критическая ошибка при обновлении счетчика:', error);
                     return getLocalCounter();
                 }
             }
@@ -1102,7 +1154,7 @@
             function getLocalCounter() {
                 let count = localStorage.getItem('fresko_counter_all');
                 if (!count) {
-                    count = 1;
+                    count = 0; // Начинаем с 0
                     localStorage.setItem('fresko_counter_all', count);
                 }
                 return parseInt(count);
@@ -1115,101 +1167,44 @@
                 return count;
             }
             
-            // Инициализация счетчика
-            try {
-                console.log('Инициализация счетчика...');
-                const totalVisits = await updateVisitCounter();
-                console.log('Получено посещений:', totalVisits);
-                displayCounter(totalVisits);
-                
-            } catch (error) {
-                console.error('Ошибка инициализации счетчика:', error);
-                const localCount = getLocalCounter();
-                displayCounter(localCount);
+            // Инициализация счетчика - с повторными попытками
+            async function initCounterWithRetry(retries = 3) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        console.log(`Попытка ${i + 1} инициализации счетчика...`);
+                        const totalVisits = await updateVisitCounter();
+                        console.log('Получено посещений:', totalVisits);
+                        displayCounter(totalVisits);
+                        return; // Успешно
+                    } catch (error) {
+                        console.error(`Ошибка при попытке ${i + 1}:`, error);
+                        
+                        if (i === retries - 1) {
+                            // Последняя попытка не удалась, показываем локальный счетчик
+                            const localCount = getLocalCounter();
+                            displayCounter(localCount);
+                        } else {
+                            // Ждем перед следующей попыткой
+                            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+                        }
+                    }
+                }
             }
+            
+            // Запускаем инициализацию счетчика
+            initCounterWithRetry();
             
             // Проверяем поддержку видео
             checkVideoSupport();
             
             // Анимация аватара
             const avatar = document.querySelector('.avatar-container');
-            setInterval(() => {
-                const intensity = 0.1 + Math.random() * 0.1;
-                avatar.style.boxShadow = `0 0 ${30 + Math.random() * 20}px rgba(255, 255, 255, ${intensity})`;
-            }, 2000);
-            
-            // Управление кнопкой-стрелкой и переключением кнопок
-            const toggleBtn = document.getElementById('toggleBtn');
-            const chatBtn = document.getElementById('chatBtn');
-            const lsBtn = document.getElementById('lsBtn');
-            
-            // Проверяем состояние в localStorage
-            const isLSActive = localStorage.getItem('fresko_ls_active') === 'true';
-            
-            // Устанавливаем начальное состояние
-            if (isLSActive) {
-                chatBtn.classList.add('hide');
-                lsBtn.classList.add('show');
-                toggleBtn.classList.add('rotated');
-            } else {
-                chatBtn.classList.remove('hide');
-                lsBtn.classList.remove('show');
-                toggleBtn.classList.remove('rotated');
+            if (avatar) {
+                setInterval(() => {
+                    const intensity = 0.1 + Math.random() * 0.1;
+                    avatar.style.boxShadow = `0 0 ${30 + Math.random() * 20}px rgba(255, 255, 255, ${intensity})`;
+                }, 2000);
             }
-            
-            // Обработчик клика на кнопку-стрелку
-            toggleBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const isChatVisible = !chatBtn.classList.contains('hide');
-                
-                if (isChatVisible) {
-                    // Скрываем "Чат общения", показываем "Мой лс"
-                    chatBtn.classList.add('hide');
-                    lsBtn.classList.add('show');
-                    toggleBtn.classList.add('rotated');
-                    localStorage.setItem('fresko_ls_active', 'true');
-                } else {
-                    // Скрываем "Мой лс", показываем "Чат общения"
-                    chatBtn.classList.remove('hide');
-                    lsBtn.classList.remove('show');
-                    toggleBtn.classList.remove('rotated');
-                    localStorage.setItem('fresko_ls_active', 'false');
-                }
-            });
-            
-            // Обработчик touch для мобильных устройств
-            toggleBtn.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const isChatVisible = !chatBtn.classList.contains('hide');
-                
-                if (isChatVisible) {
-                    chatBtn.classList.add('hide');
-                    lsBtn.classList.add('show');
-                    toggleBtn.classList.add('rotated');
-                    localStorage.setItem('fresko_ls_active', 'true');
-                } else {
-                    chatBtn.classList.remove('hide');
-                    lsBtn.classList.remove('show');
-                    toggleBtn.classList.remove('rotated');
-                    localStorage.setItem('fresko_ls_active', 'false');
-                }
-            });
-            
-            // Автозапуск видео
-            const bgVideo = document.getElementById('background-video');
-            const avatarVideo = document.querySelector('.avatar-video');
-            
-            [bgVideo, avatarVideo].forEach(video => {
-                if (video) {
-                    video.addEventListener('loadedmetadata', function() {
-                        this.play().catch(e => console.log("Автовоспроизведение видео не удалось:", e.message));
-                    });
-                }
-            });
         }
         
         // Запреты и фиксы
