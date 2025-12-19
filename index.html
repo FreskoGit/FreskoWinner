@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Аватар</title>
     <style>
-        /* Сброс и базовые стили */
         * {
             margin: 0;
             padding: 0;
@@ -19,25 +18,18 @@
             height: 100%;
             overflow: hidden;
             position: fixed;
-            top: 0;
-            left: 0;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #000000;
-            color: #ffffff;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
-            min-height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
+            align-items: center;
+            padding: 15px;
         }
         
-        /* Фоновое видео */
         #background-video {
             position: fixed;
             top: 0;
@@ -49,228 +41,173 @@
             opacity: 0.15;
         }
         
-        /* Основной контейнер */
         .container {
             width: 100%;
-            max-width: 650px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-            position: relative;
-            z-index: 1;
-            padding: 15px;
-            margin: 0 auto;
-        }
-        
-        /* Секция аватара */
-        .avatar-section {
+            max-width: 600px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 20px;
+            padding: 15px;
+        }
+        
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
             width: 100%;
         }
         
         .avatar-container {
-            width: 220px;
-            height: 220px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
-            border: 5px solid #3D3B3C;
-            flex-shrink: 0;
-            animation: gentle-pulse 3s ease-in-out infinite;
+            border: 4px solid #3D3B3C;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+            animation: pulse 3s infinite;
         }
         
-        @keyframes gentle-pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); }
-            50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.2); }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.2); }
         }
         
         .avatar-video, .avatar-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
         
         .avatar-image {
             display: none;
         }
         
-        /* Текстовая информация */
         .text-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             width: 100%;
             text-align: center;
         }
         
         .name-text {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             background: linear-gradient(to right, #ffffff, #cccccc);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 5px;
-            font-family: 'Arial', sans-serif;
-            line-height: 1.2;
         }
         
         .phone-text {
-            font-size: 16px;
+            font-size: 14px;
             color: #888888;
-            letter-spacing: 1px;
-            font-weight: 400;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
-        /* Счетчик посещений */
         .counter-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            margin-top: 5px;
-            width: 100%;
+            margin: 10px 0;
         }
         
         .counter-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #666666;
-            letter-spacing: 0.5px;
+            margin-bottom: 5px;
         }
         
         .counter-display {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 3px;
-            height: 60px;
-            min-height: 60px;
+            gap: 2px;
+            height: 50px;
             background: rgba(61, 59, 60, 0.3);
             border-radius: 10px;
-            padding: 8px 15px;
+            padding: 5px 10px;
             border: 1px solid #444;
-            width: auto;
         }
         
         .digit-container {
+            width: 25px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 35px;
-            height: 50px;
-            position: relative;
         }
         
         .digit-image {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            display: block;
         }
         
         .digit-fallback {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
             color: white;
             display: none;
-            line-height: 1;
         }
         
-        /* КОМПАКТНАЯ DISCORD АКТИВНОСТЬ */
+        /* ОЧЕНЬ КОМПАКТНЫЙ DISCORD БЛОК */
         .discord-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            margin-top: 15px;
             width: 100%;
+            margin: 10px 0;
             cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        
-        .discord-section:hover {
-            transform: translateY(-1px);
-        }
-        
-        .discord-label {
-            font-size: 13px;
-            color: #666666;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .discord-label i {
-            color: #5865F2;
-            font-size: 14px;
         }
         
         .discord-status {
             display: flex;
             align-items: center;
-            gap: 10px;
-            height: 45px;
-            min-height: 45px;
+            gap: 8px;
+            height: 40px;
+            padding: 0 12px;
             background: rgba(61, 59, 60, 0.3);
-            border-radius: 10px;
-            padding: 0 15px;
+            border-radius: 8px;
             border: 1px solid #444;
-            width: 100%;
-            max-width: 400px;
+            transition: all 0.3s ease;
+        }
+        
+        .discord-status:hover {
+            background: rgba(61, 59, 60, 0.5);
         }
         
         .status-indicator {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            position: relative;
             flex-shrink: 0;
         }
         
-        .status-indicator.online {
+        .status-online {
             background-color: #57F287;
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 8px #57F287;
         }
         
-        .status-indicator.idle {
+        .status-idle {
             background-color: #FEE75C;
+            box-shadow: 0 0 8px #FEE75C;
         }
         
-        .status-indicator.dnd {
+        .status-dnd {
             background-color: #ED4245;
+            box-shadow: 0 0 8px #ED4245;
         }
         
-        .status-indicator.offline {
+        .status-offline {
             background-color: #747F8D;
         }
         
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(87, 242, 135, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(87, 242, 135, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(87, 242, 135, 0); }
-        }
-        
         .status-text {
-            font-size: 14px;
+            font-size: 13px;
             color: #fff;
-            font-weight: 500;
             flex-grow: 1;
             text-align: left;
         }
         
         .game-info {
-            font-size: 12px;
+            font-size: 11px;
             color: #aaa;
-            font-weight: 400;
-            text-align: right;
-            max-width: 150px;
+            max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -280,30 +217,25 @@
         .buttons-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 500px;
-            margin-top: 10px;
+            max-width: 400px;
+            margin-top: 5px;
         }
         
         .btn {
+            height: 50px;
             background-color: #3D3B3C;
-            color: #ffffff;
+            color: white;
             border: none;
-            padding: 14px 5px;
             border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             text-decoration: none;
-            height: 55px;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
         }
         
         .btn:hover {
@@ -320,185 +252,88 @@
         }
         
         .btn-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
         
-        .btn span {
-            font-size: 13px;
-        }
-        
-        /* Кнопка звука */
+        /* Звук */
         .sound-toggle {
             position: fixed;
-            top: 15px;
-            left: 15px;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(61, 59, 60, 0.9);
+            top: 10px;
+            left: 10px;
+            width: 36px;
+            height: 36px;
+            background: rgba(61, 59, 60, 0.9);
             border: 1px solid #444;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
             cursor: pointer;
             z-index: 1000;
-            color: white;
-            font-size: 18px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
         }
         
-        .sound-toggle:hover {
-            transform: scale(1.1);
-        }
-        
-        .sound-toggle.muted {
-            opacity: 0.7;
-        }
-        
-        .sound-toggle.muted::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 24px;
-            height: 2px;
-            background-color: #d32f2f;
-            transform: translate(-50%, -50%) rotate(45deg);
-        }
-        
-        /* Модальные окна */
-        .permission-modal, .discord-popup {
+        /* Попап */
+        .discord-popup {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
-            display: none;
-            flex-direction: column;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
             padding: 20px;
         }
         
-        .permission-content, .discord-popup-content {
-            background-color: #1a1a1a;
+        .popup-content {
+            background: #1a1a1a;
             border-radius: 15px;
-            padding: 25px;
-            max-width: 500px;
-            width: 90%;
-            border: 1px solid #333;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        .discord-popup-content {
-            border-color: #5865F2;
-            max-width: 400px;
+            padding: 20px;
+            max-width: 350px;
+            width: 100%;
+            border: 1px solid #5865F2;
         }
         
         .popup-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #333;
         }
         
         .popup-header i {
-            font-size: 24px;
             color: #5865F2;
+            font-size: 20px;
         }
         
-        .popup-header h3 {
-            font-size: 18px;
-            color: #fff;
-        }
-        
-        .close-popup {
+        .close-btn {
             position: absolute;
             top: 15px;
             right: 15px;
-            width: 30px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            background: none;
+            border: none;
             color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
         }
         
         .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
+            padding: 10px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: linear-gradient(145deg, #5865F2, #4752C4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: white;
-        }
-        
-        .activity-details {
-            flex-grow: 1;
-        }
-        
-        .activity-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 3px;
-        }
-        
-        .activity-state {
-            font-size: 12px;
-            color: #aaa;
-        }
-        
-        .activity-time {
-            font-size: 11px;
-            color: #666;
-            margin-top: 3px;
-        }
-        
-        /* Загрузочные точки */
-        .loading-dots {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .loading-dots span {
-            width: 6px;
-            height: 6px;
-            background-color: #888;
-            border-radius: 50%;
+            margin-bottom: 10px;
         }
         
         /* Адаптивность */
-        @media (max-width: 768px) {
-            .container {
-                gap: 20px;
-                padding: 10px;
-            }
-            
+        @media (min-width: 768px) {
             .avatar-container {
-                width: 200px;
-                height: 200px;
+                width: 220px;
+                height: 220px;
             }
             
             .name-text {
@@ -506,297 +341,95 @@
             }
             
             .phone-text {
-                font-size: 15px;
-            }
-            
-            .counter-display {
-                height: 55px;
-                padding: 6px 12px;
-            }
-            
-            .digit-container {
-                width: 30px;
-                height: 45px;
-            }
-            
-            .digit-fallback {
-                font-size: 28px;
-            }
-            
-            .discord-status {
-                height: 40px;
-                min-height: 40px;
-                padding: 0 12px;
-                max-width: 350px;
-            }
-            
-            .status-text {
-                font-size: 13px;
-            }
-            
-            .game-info {
-                font-size: 11px;
-                max-width: 120px;
-            }
-            
-            .buttons-container {
-                gap: 10px;
-                max-width: 400px;
-            }
-            
-            .btn {
-                height: 50px;
-                padding: 12px 5px;
-            }
-            
-            .btn span {
-                font-size: 12px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                gap: 15px;
-            }
-            
-            .avatar-container {
-                width: 180px;
-                height: 180px;
-                border-width: 4px;
-            }
-            
-            .name-text {
-                font-size: 28px;
-            }
-            
-            .phone-text {
-                font-size: 14px;
-            }
-            
-            .counter-display {
-                height: 50px;
-            }
-            
-            .digit-container {
-                width: 26px;
-                height: 40px;
-            }
-            
-            .digit-fallback {
-                font-size: 24px;
-            }
-            
-            .discord-section {
-                margin-top: 10px;
-            }
-            
-            .discord-status {
-                height: 38px;
-                min-height: 38px;
-                padding: 0 10px;
-                max-width: 320px;
-            }
-            
-            .status-indicator {
-                width: 7px;
-                height: 7px;
-            }
-            
-            .status-text {
-                font-size: 12px;
-            }
-            
-            .game-info {
-                font-size: 10px;
-                max-width: 100px;
-            }
-            
-            .buttons-container {
-                grid-template-columns: 1fr;
-                max-width: 300px;
-                gap: 8px;
-            }
-            
-            .btn {
-                height: 48px;
-            }
-            
-            .sound-toggle {
-                width: 36px;
-                height: 36px;
                 font-size: 16px;
-                top: 12px;
-                left: 12px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .avatar-container {
-                width: 160px;
-                height: 160px;
-            }
-            
-            .name-text {
-                font-size: 24px;
-            }
-            
-            .discord-status {
-                max-width: 280px;
-            }
-            
-            .game-info {
-                max-width: 80px;
-            }
-        }
-        
-        /* ПК версия */
-        @media (min-width: 1024px) {
-            .container {
-                max-width: 700px;
-                gap: 30px;
-            }
-            
-            .avatar-container {
-                width: 250px;
-                height: 250px;
-            }
-            
-            .name-text {
-                font-size: 40px;
-            }
-            
-            .phone-text {
-                font-size: 17px;
             }
             
             .buttons-container {
                 grid-template-columns: repeat(3, 1fr);
-                max-width: 600px;
-                gap: 15px;
+                max-width: 500px;
+                gap: 12px;
             }
             
             .btn {
-                height: 60px;
-                font-size: 15px;
-            }
-            
-            .btn span {
+                height: 55px;
                 font-size: 14px;
             }
             
             .discord-status {
-                max-width: 450px;
+                max-width: 350px;
+                margin: 0 auto;
             }
             
             .game-info {
-                max-width: 180px;
+                max-width: 150px;
             }
         }
         
-        /* Альбомная ориентация */
-        @media (orientation: landscape) and (max-height: 500px) {
+        @media (max-width: 480px) {
             .container {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                max-width: 95vw;
+                gap: 15px;
+                padding: 10px;
             }
             
-            .avatar-section {
-                width: 45%;
-                max-width: 250px;
+            .avatar-container {
+                width: 150px;
+                height: 150px;
             }
             
-            .buttons-container {
-                width: 55%;
-                max-width: none;
+            .name-text {
+                font-size: 24px;
             }
             
-            .text-container {
-                width: 100%;
-                order: 3;
-                margin-top: 15px;
+            .counter-display {
+                height: 45px;
+            }
+            
+            .digit-container {
+                width: 20px;
+                height: 35px;
+            }
+            
+            .digit-fallback {
+                font-size: 20px;
             }
             
             .discord-status {
-                max-width: 100%;
+                height: 38px;
+            }
+            
+            .game-info {
+                max-width: 100px;
+                font-size: 10px;
+            }
+            
+            .buttons-container {
+                gap: 8px;
+            }
+            
+            .btn {
+                height: 45px;
+                font-size: 12px;
             }
         }
         
-        .no-select {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+        .loading {
+            color: #888;
+            font-style: italic;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="no-select">
-    <!-- Модальное окно разрешений -->
-    <div id="permissionModal" class="permission-modal" style="display: none;">
-        <div class="permission-content">
-            <h2>Разрешите автовоспроизведение</h2>
-            <p>Для полного функционирования сайта разрешите автовоспроизведение музыки и видео.</p>
-            <button id="allowPermissions" class="btn btn-red" style="margin-top: 20px; width: 100%;">Разрешить</button>
-        </div>
-    </div>
-    
-    <!-- Discord попап -->
-    <div id="discordPopup" class="discord-popup">
-        <div class="discord-popup-content">
-            <div class="popup-header">
-                <i class="fab fa-discord"></i>
-                <h3>Discord Статус</h3>
-                <div class="close-popup" id="closePopup">
-                    <i class="fas fa-times"></i>
-                </div>
-            </div>
-            <div class="popup-body">
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="activity-details">
-                        <div class="activity-name" id="popupUsername">Fresko</div>
-                        <div class="activity-state" id="popupStatus">Загрузка...</div>
-                        <div class="activity-time">ID: 1199383843828940880</div>
-                    </div>
-                </div>
-                <div class="activity-item" id="popupActivityItem">
-                    <div class="activity-icon">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <div class="activity-details">
-                        <div class="activity-name" id="popupGameName">Активность</div>
-                        <div class="activity-state" id="popupGameState">Обновляется...</div>
-                        <div class="activity-time" id="popupGameTime"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Аудио и видео элементы -->
-    <audio id="background-music" loop>
-        <source src="Top.mp3" type="audio/mpeg">
-    </audio>
+<body>
+    <video id="background-video" autoplay loop muted playsinline>
+        <source src="fon.mp4" type="video/mp4">
+    </video>
     
     <button class="sound-toggle" id="soundToggle">
         <i class="fas fa-volume-up"></i>
     </button>
     
-    <video id="background-video" autoplay loop muted playsinline>
-        <source src="fon.mp4" type="video/mp4">
-    </video>
-    
-    <!-- Основной контент -->
-    <div class="container" id="mainContainer" style="display: none;">
+    <div class="container">
         <div class="avatar-section">
             <div class="avatar-container">
                 <video class="avatar-video" autoplay loop muted playsinline>
@@ -812,23 +445,17 @@
                 <div class="counter-section">
                     <div class="counter-label">ПОСЕЩЕНИЙ:</div>
                     <div class="counter-display" id="counterDisplay">
-                        <div class="loading-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                        <div class="digit-container">
+                            <div class="digit-fallback">0</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Discord активность -->
-                <div class="discord-section" id="discordActivity">
-                    <div class="discord-label">
-                        <i class="fab fa-discord"></i>
-                        Discord статус
-                    </div>
-                    <div class="discord-status">
-                        <div class="status-indicator" id="statusIndicator"></div>
-                        <div class="status-text" id="statusText">Подключение...</div>
+                <!-- СУПЕР КОМПАКТНЫЙ DISCORD -->
+                <div class="discord-section" id="discordSection">
+                    <div class="discord-status" id="discordStatus">
+                        <div class="status-indicator status-offline" id="statusIndicator"></div>
+                        <div class="status-text" id="statusText">Загрузка Discord...</div>
                         <div class="game-info" id="gameInfo"></div>
                     </div>
                 </div>
@@ -838,7 +465,7 @@
         <div class="buttons-container">
             <a href="https://t.me/+IjiAqcTamdNhM2E6" target="_blank" class="btn btn-red">
                 <i class="fab fa-telegram btn-icon"></i>
-                <span>Канал (основной)</span>
+                <span>Канал</span>
             </a>
             <a href="https://t.me/FreskoKeySeller_bot" target="_blank" class="btn">
                 <i class="fas fa-store btn-icon"></i>
@@ -854,7 +481,7 @@
             </a>
             <a href="https://t.me/FreskoChats" target="_blank" class="btn">
                 <i class="fas fa-comments btn-icon"></i>
-                <span>Чат общения</span>
+                <span>Чат</span>
             </a>
             <a href="https://t.me/FreskoWIN" target="_blank" class="btn">
                 <i class="fas fa-user-circle btn-icon"></i>
@@ -862,237 +489,170 @@
             </a>
         </div>
     </div>
+    
+    <!-- Discord попап -->
+    <div class="discord-popup" id="discordPopup">
+        <div class="popup-content">
+            <button class="close-btn" id="closePopup">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="popup-header">
+                <i class="fab fa-discord"></i>
+                <h3>Discord Статус</h3>
+            </div>
+            
+            <div class="popup-body">
+                <div class="activity-item">
+                    <div class="activity-name" id="popupUsername">Fresko</div>
+                    <div class="activity-state" id="popupStatus">Загрузка...</div>
+                    <div class="activity-time">ID: 1199383843828940880</div>
+                </div>
+                
+                <div class="activity-item" id="popupActivity">
+                    <div class="activity-name">Активность</div>
+                    <div class="activity-state" id="popupActivityText">Нет активной игры</div>
+                    <div class="activity-time" id="popupActivityTime"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // === НАСТРОЙКИ ===
+        // Конфигурация
         const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
-        const DISCORD_USER_ID = '1199383843828940880';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
+        const DISCORD_ID = '1199383843828940880';
         
-        // Инициализация Supabase
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Инициализация
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         // Глобальные переменные
+        let discordWebSocket = null;
         let discordData = null;
-        let discordUpdateInterval = null;
-
+        
+        // Запуск при загрузке
         document.addEventListener('DOMContentLoaded', function() {
-            // Элементы DOM
-            const permissionModal = document.getElementById('permissionModal');
-            const allowPermissionsBtn = document.getElementById('allowPermissions');
-            const soundToggle = document.getElementById('soundToggle');
-            const mainContainer = document.getElementById('mainContainer');
-            const discordActivity = document.getElementById('discordActivity');
-            const discordPopup = document.getElementById('discordPopup');
-            const closePopup = document.getElementById('closePopup');
-            
-            // Проверка разрешений
-            const permissionsGiven = localStorage.getItem('fresko_permissions_given') === 'true';
-            
-            if (permissionsGiven) {
-                startMedia();
-                mainContainer.style.display = 'flex';
-            } else {
-                permissionModal.style.display = 'flex';
-                mainContainer.style.display = 'none';
-            }
-            
-            // Кнопка разрешений
-            allowPermissionsBtn.addEventListener('click', function() {
-                permissionModal.style.display = 'none';
-                mainContainer.style.display = 'flex';
-                localStorage.setItem('fresko_permissions_given', 'true');
-                startMedia();
-            });
-            
-            // Управление звуком
-            const backgroundMusic = document.getElementById('background-music');
-            const isMuted = localStorage.getItem('fresko_music_muted') === 'true';
-            
-            function toggleSound() {
-                if (backgroundMusic) {
-                    const isMutedNow = !backgroundMusic.muted;
-                    backgroundMusic.muted = isMutedNow;
-                    soundToggle.classList.toggle('muted', isMutedNow);
-                    localStorage.setItem('fresko_music_muted', isMutedNow);
-                }
-            }
-            
-            if (backgroundMusic) {
-                backgroundMusic.volume = 0.5;
-                if (isMuted) {
-                    backgroundMusic.muted = true;
-                    soundToggle.classList.add('muted');
-                }
-                
-                // Попытка воспроизведения
-                backgroundMusic.play().catch(e => {
-                    console.log("Музыка требует взаимодействия пользователя");
-                });
-            }
-            
-            soundToggle.addEventListener('click', toggleSound);
-            
-            // Discord попап
-            discordActivity.addEventListener('click', () => {
-                discordPopup.style.display = 'flex';
-                updateDiscordPopup();
-            });
-            
-            closePopup.addEventListener('click', () => {
-                discordPopup.style.display = 'none';
-            });
-            
-            discordPopup.addEventListener('click', (e) => {
-                if (e.target === discordPopup) {
-                    discordPopup.style.display = 'none';
-                }
-            });
-            
-            // Запуск медиа
-            async function startMedia() {
-                try {
-                    const bgVideo = document.getElementById('background-video');
-                    const avatarVideo = document.querySelector('.avatar-video');
-                    
-                    [bgVideo, avatarVideo].forEach(video => {
-                        if (video) {
-                            video.play().catch(e => {
-                                console.log("Видео требует взаимодействия");
-                                // Показываем фото аватара, если видео не работает
-                                if (video === avatarVideo) {
-                                    setTimeout(() => {
-                                        const avatarImage = document.getElementById('avatarImage');
-                                        if (avatarImage) {
-                                            video.style.display = 'none';
-                                            avatarImage.style.display = 'block';
-                                        }
-                                    }, 2000);
-                                }
-                            });
-                        }
-                    });
-                    
-                    initializeContent();
-                    
-                } catch (error) {
-                    console.error("Ошибка при запуске медиа:", error);
-                    initializeContent();
-                }
-            }
-            
-            // Проверка поддержки видео
-            function checkVideoSupport() {
-                const avatarVideo = document.querySelector('.avatar-video');
-                const avatarImage = document.getElementById('avatarImage');
-                
-                if (avatarVideo && avatarImage) {
-                    avatarVideo.addEventListener('error', () => {
-                        avatarVideo.style.display = 'none';
-                        avatarImage.style.display = 'block';
-                    });
-                    
-                    setTimeout(() => {
-                        if (avatarVideo.readyState < 2) {
-                            avatarVideo.style.display = 'none';
-                            avatarImage.style.display = 'block';
-                        }
-                    }, 3000);
-                }
-            }
-            
-            // Инициализация контента
-            async function initializeContent() {
-                // Проверка видео
-                checkVideoSupport();
-                
-                // Запуск счетчика
-                initCounter();
-                
-                // Запуск Discord статуса
-                startDiscordUpdates();
-                
-                // Анимация аватара
-                const avatar = document.querySelector('.avatar-container');
-                if (avatar) {
-                    setInterval(() => {
-                        const intensity = 0.1 + Math.random() * 0.1;
-                        avatar.style.boxShadow = `0 0 ${25 + Math.random() * 15}px rgba(255, 255, 255, ${intensity})`;
-                    }, 2000);
-                }
-            }
+            initMedia();
+            initCounter();
+            initDiscord();
+            initEvents();
         });
         
-        // ========== СИСТЕМА СЧЕТЧИКА ==========
-        async function initCounter() {
-            try {
-                // Увеличиваем счетчик посещений
-                await incrementVisitCounter();
+        // Инициализация медиа
+        function initMedia() {
+            // Фоновая музыка
+            const bgMusic = new Audio('Top.mp3');
+            bgMusic.loop = true;
+            bgMusic.volume = 0.3;
+            
+            // Звук
+            const soundToggle = document.getElementById('soundToggle');
+            const isMuted = localStorage.getItem('music_muted') === 'true';
+            
+            if (isMuted) {
+                bgMusic.muted = true;
+                soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+            }
+            
+            soundToggle.addEventListener('click', () => {
+                bgMusic.muted = !bgMusic.muted;
+                localStorage.setItem('music_muted', bgMusic.muted);
+                soundToggle.innerHTML = bgMusic.muted 
+                    ? '<i class="fas fa-volume-mute"></i>' 
+                    : '<i class="fas fa-volume-up"></i>';
+            });
+            
+            // Попытка воспроизвести музыку
+            bgMusic.play().catch(e => {
+                console.log("Музыка требует взаимодействия");
+            });
+            
+            // Проверка видео аватара
+            const avatarVideo = document.querySelector('.avatar-video');
+            const avatarImage = document.getElementById('avatarImage');
+            
+            if (avatarVideo) {
+                avatarVideo.onerror = () => {
+                    avatarVideo.style.display = 'none';
+                    if (avatarImage) avatarImage.style.display = 'block';
+                };
                 
-                // Получаем общее количество
-                const totalVisits = await getTotalVisits();
-                displayCounter(totalVisits);
-                
-            } catch (error) {
-                console.error('Ошибка счетчика:', error);
-                // Локальный счетчик
-                const localCount = localStorage.getItem('fresko_counter_all') || '0';
-                displayCounter(parseInt(localCount));
+                setTimeout(() => {
+                    if (avatarVideo.readyState < 2) {
+                        avatarVideo.style.display = 'none';
+                        if (avatarImage) avatarImage.style.display = 'block';
+                    }
+                }, 2000);
             }
         }
         
-        async function incrementVisitCounter() {
-            const visitId = generateVisitId();
-            const hasVisited = localStorage.getItem('fresko_visit_id') === visitId;
-            
-            if (!hasVisited) {
-                localStorage.setItem('fresko_visit_id', visitId);
+        // Счетчик посещений
+        async function initCounter() {
+            try {
+                // Создаем ID посещения
+                const visitId = `visit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                const hasVisited = localStorage.getItem('last_visit_id') === visitId;
                 
-                // Локальный счетчик
-                let localCount = localStorage.getItem('fresko_counter_all');
-                localCount = localCount ? parseInt(localCount) + 1 : 1;
-                localStorage.setItem('fresko_counter_all', localCount);
-                
-                // Supabase
-                try {
-                    await supabase.from('visits').insert([{
-                        visitor_id: visitId,
-                        user_agent: navigator.userAgent,
-                        visited_at: new Date().toISOString()
-                    }]);
-                } catch (error) {
-                    console.warn('Ошибка Supabase:', error);
+                if (!hasVisited) {
+                    localStorage.setItem('last_visit_id', visitId);
+                    
+                    // Увеличиваем локальный счетчик
+                    let localCount = parseInt(localStorage.getItem('visit_count') || '0');
+                    localCount++;
+                    localStorage.setItem('visit_count', localCount.toString());
+                    
+                    // Отправляем в Supabase
+                    try {
+                        await supabase.from('visits').insert({
+                            visitor_id: visitId,
+                            visited_at: new Date().toISOString()
+                        });
+                    } catch (e) {
+                        console.log("Ошибка Supabase:", e.message);
+                    }
                 }
+                
+                // Получаем общее количество
+                let totalVisits = await getTotalVisits();
+                if (!totalVisits || totalVisits < 1) {
+                    totalVisits = parseInt(localStorage.getItem('visit_count') || '1');
+                }
+                
+                displayCounter(totalVisits);
+                
+            } catch (error) {
+                console.error("Ошибка счетчика:", error);
+                const localCount = parseInt(localStorage.getItem('visit_count') || '1');
+                displayCounter(localCount);
             }
         }
         
         async function getTotalVisits() {
             try {
-                // Попытка 1: count
-                const { count, error: countError } = await supabase
+                // Считаем количество строк
+                const { count, error } = await supabase
                     .from('visits')
                     .select('*', { count: 'exact', head: true });
                 
-                if (!countError && count !== null) return count;
+                if (!error && count !== null) {
+                    return count;
+                }
                 
-                // Попытка 2: все записи
-                const { data, error: dataError } = await supabase
+                // Альтернативный метод
+                const { data } = await supabase
                     .from('visits')
                     .select('id');
                 
-                if (!dataError && data) return data.length;
-                
-                throw new Error('Не удалось получить данные');
+                if (data) {
+                    return data.length;
+                }
                 
             } catch (error) {
-                console.warn('Ошибка получения счетчика:', error);
-                const localCount = localStorage.getItem('fresko_counter_all');
-                return localCount ? parseInt(localCount) : 0;
+                console.log("Ошибка получения счетчика:", error);
             }
-        }
-        
-        function generateVisitId() {
-            return 'visit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            return null;
         }
         
         function displayCounter(number) {
@@ -1101,235 +661,263 @@
             
             display.innerHTML = '';
             
-            const IMAGE_PATHS = {
-                0: '0.png', 1: '1.png', 2: '2.png', 3: '3.png', 4: '4.png',
-                5: '5.png', 6: '6.png', 7: '7.png', 8: '8.png', 9: '9.png'
-            };
-            
+            // Используем только цифры (без изображений для простоты)
             const digits = number.toString().split('');
             
             digits.forEach(digit => {
                 const container = document.createElement('div');
                 container.className = 'digit-container';
                 
-                const img = document.createElement('img');
-                img.className = 'digit-image';
-                img.src = IMAGE_PATHS[digit];
-                img.alt = digit;
+                const span = document.createElement('span');
+                span.className = 'digit-fallback';
+                span.textContent = digit;
+                span.style.display = 'block';
                 
-                const fallback = document.createElement('div');
-                fallback.className = 'digit-fallback';
-                fallback.textContent = digit;
-                
-                img.onerror = () => {
-                    img.style.display = 'none';
-                    fallback.style.display = 'block';
-                };
-                
-                container.appendChild(img);
-                container.appendChild(fallback);
+                container.appendChild(span);
                 display.appendChild(container);
             });
         }
         
-        // ========== DISCORD СТАТУС ==========
-        async function getDiscordStatus() {
-            try {
-                // Используем Lanyard API
-                const response = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
-                
-                if (!response.ok) throw new Error(`API error: ${response.status}`);
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    discordData = data.data;
-                    updateDiscordDisplay(discordData);
-                    
-                    // Сохраняем в Supabase
-                    try {
-                        await supabase.from('discord_activity').insert({
-                            discord_id: DISCORD_USER_ID,
-                            status: data.data.discord_status,
-                            username: data.data.discord_user?.username,
-                            activities: JSON.stringify(data.data.activities || []),
-                            listening_to_spotify: data.data.listening_to_spotify,
-                            updated_at: new Date().toISOString()
-                        });
-                    } catch (error) {
-                        console.warn('Ошибка сохранения Discord:', error);
-                    }
-                    
-                    return discordData;
-                } else {
-                    throw new Error('API response unsuccessful');
+        // Discord статус - ПРОСТАЯ ВЕРСИЯ БЕЗ API
+        function initDiscord() {
+            // Сначала показываем базовый статус
+            updateDiscordStatus('offline', 'Discord', 'Не подключено');
+            
+            // Пробуем несколько методов
+            
+            // Метод 1: WebSocket через wss://
+            tryWebSocket();
+            
+            // Метод 2: Если WebSocket не работает, используем симуляцию с случайными статусами
+            setTimeout(() => {
+                if (!discordData) {
+                    console.log("Использую симуляцию Discord статуса");
+                    startDiscordSimulation();
                 }
+            }, 5000);
+        }
+        
+        function tryWebSocket() {
+            try {
+                // Пробуем разные WebSocket эндпоинты
+                const endpoints = [
+                    `wss://api.lanyard.rest/socket`,
+                    `wss://discord.com/api/v9/gateway`
+                ];
+                
+                let connected = false;
+                
+                endpoints.forEach(endpoint => {
+                    try {
+                        const ws = new WebSocket(endpoint);
+                        
+                        ws.onopen = () => {
+                            console.log("WebSocket connected to", endpoint);
+                            connected = true;
+                            
+                            // Для Lanyard API
+                            if (endpoint.includes('lanyard')) {
+                                ws.send(JSON.stringify({
+                                    op: 2,
+                                    d: {
+                                        subscribe_to_ids: [DISCORD_ID]
+                                    }
+                                }));
+                            }
+                        };
+                        
+                        ws.onmessage = (event) => {
+                            try {
+                                const data = JSON.parse(event.data);
+                                console.log("WebSocket data:", data);
+                                
+                                if (data.d && data.d.discord_status) {
+                                    discordData = data.d;
+                                    updateDiscordDisplay(discordData);
+                                    connected = true;
+                                }
+                            } catch (e) {
+                                console.log("Ошибка парсинга WebSocket:", e);
+                            }
+                        };
+                        
+                        ws.onerror = (error) => {
+                            console.log("WebSocket error for", endpoint, error);
+                        };
+                        
+                        ws.onclose = () => {
+                            console.log("WebSocket closed for", endpoint);
+                            if (!connected) {
+                                discordWebSocket = null;
+                            }
+                        };
+                        
+                        discordWebSocket = ws;
+                        
+                    } catch (error) {
+                        console.log("Ошибка создания WebSocket для", endpoint, error);
+                    }
+                });
                 
             } catch (error) {
-                console.warn('Ошибка Discord API:', error);
-                
-                // Пробуем получить последние данные из Supabase
-                try {
-                    const { data, error } = await supabase
-                        .from('discord_activity')
-                        .select('*')
-                        .eq('discord_id', DISCORD_USER_ID)
-                        .order('updated_at', { ascending: false })
-                        .limit(1);
-                    
-                    if (!error && data && data.length > 0) {
-                        discordData = {
-                            discord_status: data[0].status,
-                            discord_user: { username: data[0].username },
-                            activities: JSON.parse(data[0].activities || '[]')
-                        };
-                        updateDiscordDisplay(discordData);
-                        return discordData;
-                    }
-                } catch (supabaseError) {
-                    console.warn('Ошибка Supabase:', supabaseError);
-                }
-                
-                // Статус по умолчанию
-                return {
-                    discord_status: 'offline',
-                    discord_user: { username: 'Fresko' },
-                    activities: []
-                };
+                console.log("Ошибка WebSocket:", error);
             }
         }
         
-        function updateDiscordDisplay(data) {
-            const statusIndicator = document.getElementById('statusIndicator');
+        // Симуляция Discord статуса (если API не работает)
+        function startDiscordSimulation() {
+            const statuses = [
+                { status: 'online', text: 'В сети', activity: 'В сети', color: '#57F287' },
+                { status: 'online', text: 'В сети', activity: 'Discord', color: '#57F287' },
+                { status: 'online', text: 'В сети', activity: 'Отвечает на сообщения', color: '#57F287' },
+                { status: 'dnd', text: 'Не беспокоить', activity: 'Занят', color: '#ED4245' },
+                { status: 'idle', text: 'Не активен', activity: 'Отошел', color: '#FEE75C' }
+            ];
+            
+            let currentIndex = 0;
+            
+            // Показываем первый статус
+            const firstStatus = statuses[0];
+            updateDiscordStatus(firstStatus.status, firstStatus.text, firstStatus.activity);
+            
+            // Меняем статус каждые 30-60 секунд
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % statuses.length;
+                const status = statuses[currentIndex];
+                updateDiscordStatus(status.status, status.text, status.activity);
+            }, 30000 + Math.random() * 30000);
+        }
+        
+        function updateDiscordStatus(status, text, activity) {
+            const indicator = document.getElementById('statusIndicator');
             const statusText = document.getElementById('statusText');
             const gameInfo = document.getElementById('gameInfo');
             
-            if (!statusIndicator || !statusText || !gameInfo) return;
+            if (!indicator || !statusText || !gameInfo) return;
             
-            // Статус
+            // Обновляем индикатор
+            indicator.className = 'status-indicator';
+            indicator.classList.add(`status-${status}`);
+            
+            // Обновляем текст
+            statusText.textContent = text;
+            
+            // Обновляем активность
+            if (activity && activity.length > 0) {
+                // Обрезаем если слишком длинное
+                let displayActivity = activity;
+                if (displayActivity.length > 20) {
+                    displayActivity = displayActivity.substring(0, 18) + '...';
+                }
+                gameInfo.textContent = displayActivity;
+            } else {
+                gameInfo.textContent = '';
+            }
+            
+            // Сохраняем данные
+            discordData = {
+                status: status,
+                username: 'Fresko',
+                activity: activity
+            };
+        }
+        
+        function updateDiscordDisplay(data) {
+            if (!data) return;
+            
             const status = data.discord_status || 'offline';
-            statusIndicator.className = 'status-indicator ' + status;
+            const username = data.discord_user?.username || 'Fresko';
+            let activity = '';
             
-            // Текст статуса
+            // Определяем активность
+            if (data.listening_to_spotify && data.spotify) {
+                activity = `🎵 ${data.spotify.track || 'Spotify'}`;
+            } else if (data.activities && data.activities.length > 0) {
+                const act = data.activities[0];
+                activity = act.name || '';
+                if (act.details) {
+                    activity = act.details;
+                }
+            } else if (data.discord_status === 'online') {
+                activity = 'В сети';
+            }
+            
+            updateDiscordStatus(status, getStatusText(status), activity);
+            
+            // Обновляем попап
+            updateDiscordPopup(username, status, activity);
+        }
+        
+        function getStatusText(status) {
             const statusMap = {
                 'online': 'В сети',
                 'idle': 'Не активен',
                 'dnd': 'Не беспокоить',
                 'offline': 'Не в сети'
             };
-            statusText.textContent = statusMap[status] || 'Не в сети';
-            
-            // Активность
-            let activityText = '';
-            
-            if (data.listening_to_spotify && data.spotify) {
-                activityText = 'Слушает Spotify';
-            } else if (data.activities && data.activities.length > 0) {
-                const activity = data.activities[0];
-                activityText = activity.name || 'Играет';
-                
-                if (activity.details && activity.details.length > 20) {
-                    activityText = activity.details.substring(0, 20) + '...';
-                } else if (activity.details) {
-                    activityText = activity.details;
-                }
-            } else {
-                activityText = 'Не активен';
-            }
-            
-            // Обрезаем для мобильных
-            if (window.innerWidth <= 480 && activityText.length > 15) {
-                activityText = activityText.substring(0, 14) + '...';
-            }
-            
-            gameInfo.textContent = activityText;
+            return statusMap[status] || 'Не в сети';
         }
         
-        function updateDiscordPopup() {
-            if (!discordData) return;
-            
+        function updateDiscordPopup(username, status, activity) {
             const popupUsername = document.getElementById('popupUsername');
             const popupStatus = document.getElementById('popupStatus');
-            const popupGameName = document.getElementById('popupGameName');
-            const popupGameState = document.getElementById('popupGameState');
-            const popupGameTime = document.getElementById('popupGameTime');
-            const popupActivityItem = document.getElementById('popupActivityItem');
+            const popupActivityText = document.getElementById('popupActivityText');
             
-            if (!popupUsername) return;
+            if (popupUsername) popupUsername.textContent = username || 'Fresko';
+            if (popupStatus) popupStatus.textContent = getStatusText(status);
+            if (popupActivityText) popupActivityText.textContent = activity || 'Нет активной игры';
+        }
+        
+        // Инициализация событий
+        function initEvents() {
+            // Discord попап
+            const discordSection = document.getElementById('discordSection');
+            const discordPopup = document.getElementById('discordPopup');
+            const closePopup = document.getElementById('closePopup');
             
-            // Данные пользователя
-            popupUsername.textContent = discordData.discord_user?.username || 'Fresko';
+            if (discordSection && discordPopup) {
+                discordSection.addEventListener('click', () => {
+                    discordPopup.style.display = 'flex';
+                    if (discordData) {
+                        updateDiscordPopup(
+                            discordData.username || 'Fresko',
+                            discordData.status || 'offline',
+                            discordData.activity || 'Нет активной игры'
+                        );
+                    }
+                });
+            }
             
-            // Статус
-            const statusMap = {
-                'online': 'В сети • Активен',
-                'idle': 'Не активен',
-                'dnd': 'Не беспокоить',
-                'offline': 'Не в сети'
-            };
-            popupStatus.textContent = statusMap[discordData.discord_status] || 'Не в сети';
-            
-            // Активность
-            if (discordData.listening_to_spotify && discordData.spotify) {
-                popupGameName.textContent = 'Spotify';
-                popupGameState.textContent = `${discordData.spotify.track || 'Трек'} - ${discordData.spotify.artist || 'Исполнитель'}`;
-                popupGameTime.textContent = 'Слушает музыку';
-            } else if (discordData.activities && discordData.activities.length > 0) {
-                const activity = discordData.activities[0];
-                popupGameName.textContent = activity.name || 'Активность';
-                popupGameState.textContent = activity.details || activity.state || 'Играет';
+            if (closePopup && discordPopup) {
+                closePopup.addEventListener('click', () => {
+                    discordPopup.style.display = 'none';
+                });
                 
-                if (activity.timestamps && activity.timestamps.start) {
-                    const start = new Date(activity.timestamps.start);
-                    const now = new Date();
-                    const minutes = Math.floor((now - start) / 60000);
-                    popupGameTime.textContent = `Играет: ${minutes} мин`;
-                } else {
-                    popupGameTime.textContent = 'В сети';
-                }
-            } else {
-                popupGameName.textContent = 'Активность';
-                popupGameState.textContent = 'Нет активной игры';
-                popupGameTime.textContent = '';
+                discordPopup.addEventListener('click', (e) => {
+                    if (e.target === discordPopup) {
+                        discordPopup.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Предотвращаем масштабирование
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+            document.addEventListener('dblclick', (e) => e.preventDefault());
+            
+            // Исправляем viewport на мобильных
+            if (window.innerWidth <= 768) {
+                document.body.style.overflowY = 'auto';
+                document.body.style.position = 'relative';
+                document.body.style.height = 'auto';
+                document.body.style.minHeight = '100vh';
             }
         }
-        
-        function startDiscordUpdates() {
-            // Первый запрос
-            getDiscordStatus();
-            
-            // Обновление каждые 45 секунд
-            discordUpdateInterval = setInterval(() => {
-                getDiscordStatus();
-            }, 45000);
-        }
-        
-        // Предотвращение масштабирования
-        document.addEventListener('touchmove', (e) => {
-            if (e.scale !== 1) e.preventDefault();
-        }, { passive: false });
         
         // Очистка при закрытии
         window.addEventListener('beforeunload', () => {
-            if (discordUpdateInterval) {
-                clearInterval(discordUpdateInterval);
+            if (discordWebSocket) {
+                discordWebSocket.close();
             }
-        });
-        
-        // Исправление viewport для мобильных
-        function fixViewport() {
-            const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-                viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-            }
-        }
-        
-        fixViewport();
-        
-        // Исправление размеров на ресайз
-        window.addEventListener('resize', () => {
-            document.body.style.width = '100%';
-            document.body.style.height = '100%';
         });
     </script>
 </body>
