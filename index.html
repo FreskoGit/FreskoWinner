@@ -20,9 +20,7 @@
         .counter-section{width:100%;text-align:center;margin:10px 0}
         .counter-label{font-size:12px;color:#666;margin-bottom:8px;letter-spacing:1px}
         .counter-display{display:flex;justify-content:center;align-items:center;gap:3px;height:50px;background:rgba(61,59,60,0.3);border-radius:10px;border:1px solid #444;padding:0 15px;margin:0 auto;max-width:300px}
-        .digit{font-size:24px;font-weight:bold;color:#fff;min-width:20px;text-align:center;transition:transform 0.3s ease}
-        .digit.animating{animation:pop 0.5s ease}
-        @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+        .digit{font-size:24px;font-weight:bold;color:#fff;min-width:20px;text-align:center}
         .buttons-container{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:400px;margin-top:10px}
         .btn{height:50px;background:linear-gradient(145deg,#ff3838,#ff5757);color:white;border:none;border-radius:10px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all 0.3s ease;cursor:pointer;position:relative;overflow:hidden}
         .btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left 0.7s}
@@ -36,7 +34,6 @@
         .sound-toggle.muted::after{content:'';position:absolute;top:50%;left:50%;width:24px;height:2px;background:#ff3838;transform:translate(-50%,-50%) rotate(45deg)}
         @media (min-width:768px){.avatar-container{width:200px;height:200px}.name-text{font-size:32px}.phone-text{font-size:16px}.buttons-container{grid-template-columns:repeat(3,1fr);max-width:500px}.btn{height:55px;font-size:14px}}
         @media (max-width:480px){.container{padding:10px;gap:15px}.avatar-container{width:150px;height:150px}.name-text{font-size:24px}.counter-display{height:45px;padding:0 10px}.digit{font-size:20px}.buttons-container{gap:8px}.btn{height:45px;font-size:12px}}
-        @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -108,7 +105,6 @@
         let backgroundMusic;
         let isMusicPlaying = true;
         let supabaseClient = null;
-        let currentVisitCount = 0;
 
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -170,7 +166,8 @@
                 
             } catch (error) {
                 console.error('Ошибка инициализации:', error);
-                await animateCounterDisplay(parseInt(localStorage.getItem('fresko_visit_count') || '123'));
+                const count = parseInt(localStorage.getItem('fresko_visit_count') || '123');
+                await animateCounterSmoothly(count);
             }
         });
 
@@ -215,14 +212,12 @@
                 }
                 
                 const totalVisits = await getTotalVisits();
-                currentVisitCount = totalVisits;
-                await animateCounterDisplay(totalVisits);
+                await animateCounterSmoothly(totalVisits);
                 
             } catch (error) {
                 console.error('Ошибка счетчика:', error);
                 const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
-                currentVisitCount = localCount;
-                await animateCounterDisplay(localCount);
+                await animateCounterSmoothly(localCount);
             }
         }
 
@@ -259,7 +254,7 @@
             }
         }
 
-        async function animateCounterDisplay(targetNumber) {
+        async function animateCounterSmoothly(targetNumber) {
             const counterDisplay = document.getElementById('counterDisplay');
             if (!counterDisplay) return;
             
@@ -272,6 +267,8 @@
                 const digitElement = document.createElement('div');
                 digitElement.className = 'digit';
                 digitElement.textContent = '0';
+                digitElement.style.opacity = '0.5';
+                digitElement.style.transform = 'translateY(10px)';
                 return digitElement;
             });
             
@@ -280,36 +277,42 @@
             });
             
             return new Promise(resolve => {
-                const duration = 2000;
-                const steps = 60;
-                const stepTime = duration / steps;
+                const startTime = Date.now();
                 
-                let currentStep = 0;
-                
-                const animateStep = () => {
-                    currentStep++;
+                const animate = () => {
+                    const currentTime = Date.now();
+                    const elapsed = currentTime - startTime;
                     
-                    const progress = currentStep / steps;
-                    const currentValue = Math.floor(targetNumber * progress);
+                    const speedFactor = Math.min(1, 1000 / targetNumber);
+                    const duration = Math.max(500, Math.min(2000, 1500 * speedFactor));
+                    
+                    const progress = Math.min(1, elapsed / duration);
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    const currentValue = Math.floor(targetNumber * easeProgress);
                     
                     const currentFormatted = currentValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                     const currentDigits = currentFormatted.split('');
                     
                     digitElements.forEach((element, index) => {
                         const digit = index < currentDigits.length ? currentDigits[index] : '0';
-                        element.textContent = digit;
                         
-                        if (digit !== element.getAttribute('data-last')) {
-                            element.classList.add('animating');
+                        if (element.textContent !== digit) {
+                            element.textContent = digit;
+                            
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                            element.style.transition = 'all 0.3s ease';
+                            
                             setTimeout(() => {
-                                element.classList.remove('animating');
-                            }, 500);
-                            element.setAttribute('data-last', digit);
+                                element.style.transition = '';
+                            }, 300);
                         }
                     });
                     
-                    if (currentStep < steps) {
-                        setTimeout(animateStep, stepTime);
+                    if (progress < 1) {
+                        const nextFrameDelay = Math.max(16, Math.floor(32 * speedFactor));
+                        setTimeout(animate, nextFrameDelay);
                     } else {
                         const finalFormatted = targetNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
                         const finalDigits = finalFormatted.split('');
@@ -317,18 +320,15 @@
                         digitElements.forEach((element, index) => {
                             const digit = index < finalDigits.length ? finalDigits[index] : '0';
                             element.textContent = digit;
-                            element.classList.add('animating');
-                            setTimeout(() => {
-                                element.classList.remove('animating');
-                            }, 500);
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
                         });
                         
-                        counterDisplay.style.animation = 'countUp 0.5s ease';
                         resolve();
                     }
                 };
                 
-                setTimeout(animateStep, stepTime);
+                animate();
             });
         }
 
