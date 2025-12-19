@@ -20,7 +20,8 @@
         .counter-section{width:100%;text-align:center;margin:10px 0}
         .counter-label{font-size:12px;color:#666;margin-bottom:8px;letter-spacing:1px}
         .counter-display{display:flex;justify-content:center;align-items:center;gap:3px;height:50px;background:rgba(61,59,60,0.3);border-radius:10px;border:1px solid #444;padding:0 15px;margin:0 auto;max-width:300px}
-        .digit{font-size:24px;font-weight:bold;color:#fff;min-width:20px;text-align:center}
+        .digit{font-size:24px;font-weight:bold;color:#fff;min-width:20px;text-align:center;transition:all 0.2s}
+        .digit.new{color:#ff3838;transform:scale(1.3)}
         .buttons-container{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:100%;max-width:400px;margin-top:10px}
         .btn{height:50px;background:linear-gradient(145deg,#ff3838,#ff5757);color:white;border:none;border-radius:10px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all 0.3s ease;cursor:pointer;position:relative;overflow:hidden}
         .btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left 0.7s}
@@ -105,7 +106,7 @@
         let backgroundMusic;
         let isMusicPlaying = true;
         let supabaseClient = null;
-        let currentTotalVisits = 0;
+        let totalVisits = 0;
 
         document.addEventListener('DOMContentLoaded', async function() {
             try {
@@ -143,7 +144,7 @@
                     soundToggle.addEventListener('click', toggleMusic);
                 }
                 
-                await initVisitCounter();
+                await initCounter();
                 
                 const avatarVideo = document.querySelector('.avatar-video');
                 const avatarImage = document.querySelector('.avatar-image');
@@ -167,8 +168,8 @@
                 
             } catch (error) {
                 console.error('Ошибка инициализации:', error);
-                const count = await getTotalVisitsFromDB();
-                displayCounterWithAnimation(0, count);
+                totalVisits = parseInt(localStorage.getItem('fresko_total_visits') || '123');
+                animateCounter(0, totalVisits);
             }
         });
 
@@ -189,178 +190,132 @@
             }
         }
 
-        async function initVisitCounter() {
+        async function initCounter() {
             try {
-                await registerNewVisit();
+                await increaseCounter();
                 
-                const totalVisits = await getTotalVisitsFromDB();
-                currentTotalVisits = totalVisits;
-                
-                displayCounterWithAnimation(0, totalVisits);
+                totalVisits = await getTotalVisits();
+                animateCounter(0, totalVisits);
                 
             } catch (error) {
                 console.error('Ошибка счетчика:', error);
-                const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
-                displayCounterWithAnimation(0, localCount);
+                totalVisits = parseInt(localStorage.getItem('fresko_total_visits') || '123');
+                animateCounter(0, totalVisits);
             }
         }
 
-        async function registerNewVisit() {
+        async function increaseCounter() {
             try {
                 if (!supabaseClient) {
-                    console.warn('Supabase не подключен');
+                    let localCount = parseInt(localStorage.getItem('fresko_total_visits') || '0');
+                    localCount++;
+                    localStorage.setItem('fresko_total_visits', localCount.toString());
                     return;
                 }
                 
-                const visitorId = generateVisitorId();
-                const userAgent = navigator.userAgent.substring(0, 200);
-                const ipAddress = await getClientIP();
-                
-                const { error } = await supabaseClient
-                    .from('visits')
-                    .insert({
-                        visitor_id: visitorId,
-                        user_agent: userAgent,
-                        ip_address: ipAddress,
-                        visited_at: new Date().toISOString()
-                    });
+                const { data, error } = await supabaseClient.rpc('increment_visits');
                 
                 if (error) {
-                    console.warn('Ошибка сохранения посещения:', error.message);
-                    
-                    if (error.message.includes('relation "visits" does not exist')) {
-                        console.log('Таблица visits не существует, создаем...');
-                        await createVisitsTable();
-                        await registerNewVisit();
-                    }
+                    console.warn('Ошибка RPC, пробуем через update:', error.message);
+                    await updateCounterDirectly();
                 } else {
-                    console.log('✅ Посещение зарегистрировано в базе данных');
+                    console.log('✅ Счетчик увеличен через RPC');
                 }
                 
             } catch (error) {
-                console.error('Ошибка регистрации посещения:', error);
+                console.error('Ошибка увеличения счетчика:', error);
+                let localCount = parseInt(localStorage.getItem('fresko_total_visits') || '0');
+                localCount++;
+                localStorage.setItem('fresko_total_visits', localCount.toString());
             }
         }
 
-        function generateVisitorId() {
-            const timestamp = Date.now();
-            const random = Math.random().toString(36).substr(2, 9);
-            const userAgentHash = btoa(navigator.userAgent).substr(0, 10);
-            return `visitor_${timestamp}_${random}_${userAgentHash}`;
-        }
-
-        async function getClientIP() {
+        async function updateCounterDirectly() {
             try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                return data.ip;
+                const { data: currentData, error: fetchError } = await supabaseClient
+                    .from('counter')
+                    .select('value')
+                    .eq('id', 1)
+                    .single();
+                
+                if (fetchError && fetchError.code === 'PGRST116') {
+                    await supabaseClient
+                        .from('counter')
+                        .insert({ id: 1, value: 1 });
+                } else {
+                    const newValue = (currentData?.value || 0) + 1;
+                    await supabaseClient
+                        .from('counter')
+                        .update({ value: newValue })
+                        .eq('id', 1);
+                }
+                
             } catch (error) {
-                return 'unknown';
+                console.error('Ошибка прямого обновления счетчика:', error);
+                throw error;
             }
         }
 
-        async function getTotalVisitsFromDB() {
+        async function getTotalVisits() {
             try {
                 if (!supabaseClient) {
-                    console.warn('Supabase не подключен, используем локальное значение');
-                    const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
+                    const localCount = parseInt(localStorage.getItem('fresko_total_visits') || '123');
                     return Math.max(localCount, 1);
                 }
                 
-                const { count, error } = await supabaseClient
-                    .from('visits')
-                    .select('*', { count: 'exact', head: true });
+                const { data, error } = await supabaseClient
+                    .from('counter')
+                    .select('value')
+                    .eq('id', 1)
+                    .single();
                 
-                if (!error && count !== null) {
-                    return Math.max(count, 1);
-                }
-                
-                const { data } = await supabaseClient
-                    .from('visits')
-                    .select('id');
-                
-                if (data) {
-                    return Math.max(data.length, 1);
-                }
-                
-                console.log('Пробуем создать таблицу...');
-                await createVisitsTable();
-                return 1;
-                
-            } catch (error) {
-                console.warn('Ошибка получения счетчика:', error.message);
-                
-                if (error.message.includes('relation "visits" does not exist')) {
-                    console.log('Таблица не существует, создаем...');
-                    await createVisitsTable();
+                if (error && error.code === 'PGRST116') {
+                    await supabaseClient
+                        .from('counter')
+                        .insert({ id: 1, value: 1 });
                     return 1;
                 }
                 
-                const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
+                return Math.max(data?.value || 1, 1);
+                
+            } catch (error) {
+                console.warn('Ошибка получения счетчика:', error.message);
+                const localCount = parseInt(localStorage.getItem('fresko_total_visits') || '123');
                 return Math.max(localCount, 1);
             }
         }
 
-        async function createVisitsTable() {
-            try {
-                console.log('Создание таблицы visits в Supabase...');
-                
-                const { error } = await supabaseClient.rpc('create_visits_table');
-                
-                if (error) {
-                    console.warn('Ошибка создания таблицы через RPC:', error.message);
-                    
-                    await supabaseClient
-                        .from('visits')
-                        .insert({
-                            visitor_id: 'initial_record',
-                            user_agent: 'system',
-                            ip_address: '127.0.0.1',
-                            visited_at: new Date().toISOString()
-                        })
-                        .then(() => {
-                            console.log('✅ Таблица visits создана через автоматическое определение схемы');
-                        })
-                        .catch(() => {
-                            console.warn('Не удалось создать таблицу');
-                        });
-                }
-                
-            } catch (error) {
-                console.error('Ошибка создания таблицы:', error);
-            }
-        }
-
-        function displayCounterWithAnimation(start, end) {
+        function animateCounter(start, end) {
             const counterDisplay = document.getElementById('counterDisplay');
             if (!counterDisplay) return;
             
             counterDisplay.innerHTML = '';
             
             const digitsCount = Math.max(end.toString().length, 3);
+            const digitElements = [];
+            
             for (let i = 0; i < digitsCount; i++) {
                 const digitElement = document.createElement('div');
                 digitElement.className = 'digit';
                 digitElement.textContent = '0';
-                digitElement.setAttribute('data-digit-index', i);
+                digitElement.dataset.index = i;
                 counterDisplay.appendChild(digitElement);
+                digitElements.push(digitElement);
             }
             
-            animateCounterValue(start, end);
+            animateValue(start, end, digitElements);
         }
 
-        function animateCounterValue(start, end) {
-            const counterDisplay = document.getElementById('counterDisplay');
-            const duration = calculateDuration(start, end);
-            
+        function animateValue(start, end, digitElements) {
             let startTimestamp = null;
+            const duration = calculateDuration(start, end);
             
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 const currentValue = Math.floor(progress * (end - start) + start);
                 
-                updateCounterDigits(currentValue);
+                updateDigits(currentValue, digitElements);
                 
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
@@ -372,32 +327,26 @@
 
         function calculateDuration(start, end) {
             const difference = end - start;
-            const baseDuration = 1500;
-            const speedFactor = Math.max(0.3, Math.min(1, 1000 / difference));
+            const baseDuration = 1200;
+            const speedFactor = Math.max(0.4, Math.min(1, 500 / difference));
             return baseDuration * speedFactor;
         }
 
-        function updateCounterDigits(value) {
-            const counterDisplay = document.getElementById('counterDisplay');
-            const digits = counterDisplay.querySelectorAll('.digit');
-            
+        function updateDigits(value, digitElements) {
             const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             const valueDigits = formattedValue.split('');
             
-            digits.forEach((digitElement, index) => {
-                const digitIndex = digits.length - valueDigits.length + index;
+            digitElements.forEach((digitElement, index) => {
+                const digitIndex = digitElements.length - valueDigits.length + index;
                 const digitValue = digitIndex >= 0 ? valueDigits[digitIndex] : '0';
                 
                 if (digitElement.textContent !== digitValue) {
                     digitElement.textContent = digitValue;
-                    
-                    digitElement.style.transform = 'scale(1.2)';
-                    digitElement.style.color = '#ff3838';
+                    digitElement.classList.add('new');
                     
                     setTimeout(() => {
-                        digitElement.style.transform = 'scale(1)';
-                        digitElement.style.color = '#fff';
-                    }, 150);
+                        digitElement.classList.remove('new');
+                    }, 300);
                 }
             });
         }
