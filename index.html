@@ -167,7 +167,7 @@
             } catch (error) {
                 console.error('Ошибка инициализации:', error);
                 const count = parseInt(localStorage.getItem('fresko_visit_count') || '123');
-                await animateCounterSmoothly(count);
+                displayCounterWithAnimation(0, count);
             }
         });
 
@@ -212,12 +212,12 @@
                 }
                 
                 const totalVisits = await getTotalVisits();
-                await animateCounterSmoothly(totalVisits);
+                displayCounterWithAnimation(0, totalVisits);
                 
             } catch (error) {
                 console.error('Ошибка счетчика:', error);
                 const localCount = parseInt(localStorage.getItem('fresko_visit_count') || '123');
-                await animateCounterSmoothly(localCount);
+                displayCounterWithAnimation(0, localCount);
             }
         }
 
@@ -254,81 +254,74 @@
             }
         }
 
-        async function animateCounterSmoothly(targetNumber) {
+        function displayCounterWithAnimation(start, end) {
             const counterDisplay = document.getElementById('counterDisplay');
             if (!counterDisplay) return;
             
             counterDisplay.innerHTML = '';
             
-            const formattedNumber = targetNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-            const digits = formattedNumber.split('');
-            
-            const digitElements = digits.map(() => {
+            const digitsCount = end.toString().length;
+            for (let i = 0; i < digitsCount; i++) {
                 const digitElement = document.createElement('div');
                 digitElement.className = 'digit';
                 digitElement.textContent = '0';
-                digitElement.style.opacity = '0.5';
-                digitElement.style.transform = 'translateY(10px)';
-                return digitElement;
-            });
+                digitElement.setAttribute('data-digit-index', i);
+                counterDisplay.appendChild(digitElement);
+            }
             
-            digitElements.forEach(element => {
-                counterDisplay.appendChild(element);
-            });
+            animateCounterValue(start, end);
+        }
+
+        function animateCounterValue(start, end) {
+            const counterDisplay = document.getElementById('counterDisplay');
+            const duration = calculateDuration(start, end);
             
-            return new Promise(resolve => {
-                const startTime = Date.now();
+            let startTimestamp = null;
+            
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentValue = Math.floor(progress * (end - start) + start);
                 
-                const animate = () => {
-                    const currentTime = Date.now();
-                    const elapsed = currentTime - startTime;
-                    
-                    const speedFactor = Math.min(1, 1000 / targetNumber);
-                    const duration = Math.max(500, Math.min(2000, 1500 * speedFactor));
-                    
-                    const progress = Math.min(1, elapsed / duration);
-                    const easeProgress = 1 - Math.pow(1 - progress, 3);
-                    
-                    const currentValue = Math.floor(targetNumber * easeProgress);
-                    
-                    const currentFormatted = currentValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                    const currentDigits = currentFormatted.split('');
-                    
-                    digitElements.forEach((element, index) => {
-                        const digit = index < currentDigits.length ? currentDigits[index] : '0';
-                        
-                        if (element.textContent !== digit) {
-                            element.textContent = digit;
-                            
-                            element.style.opacity = '1';
-                            element.style.transform = 'translateY(0)';
-                            element.style.transition = 'all 0.3s ease';
-                            
-                            setTimeout(() => {
-                                element.style.transition = '';
-                            }, 300);
-                        }
-                    });
-                    
-                    if (progress < 1) {
-                        const nextFrameDelay = Math.max(16, Math.floor(32 * speedFactor));
-                        setTimeout(animate, nextFrameDelay);
-                    } else {
-                        const finalFormatted = targetNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                        const finalDigits = finalFormatted.split('');
-                        
-                        digitElements.forEach((element, index) => {
-                            const digit = index < finalDigits.length ? finalDigits[index] : '0';
-                            element.textContent = digit;
-                            element.style.opacity = '1';
-                            element.style.transform = 'translateY(0)';
-                        });
-                        
-                        resolve();
-                    }
-                };
+                updateCounterDigits(currentValue);
                 
-                animate();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            
+            window.requestAnimationFrame(step);
+        }
+
+        function calculateDuration(start, end) {
+            const difference = end - start;
+            const baseDuration = 1500;
+            const speedFactor = Math.max(0.3, Math.min(1, 1000 / difference));
+            return baseDuration * speedFactor;
+        }
+
+        function updateCounterDigits(value) {
+            const counterDisplay = document.getElementById('counterDisplay');
+            const digits = counterDisplay.querySelectorAll('.digit');
+            
+            const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            const valueDigits = formattedValue.split('');
+            
+            digits.forEach((digitElement, index) => {
+                const digitIndex = digits.length - valueDigits.length + index;
+                const digitValue = digitIndex >= 0 ? valueDigits[digitIndex] : '0';
+                
+                if (digitElement.textContent !== digitValue) {
+                    digitElement.textContent = digitValue;
+                    
+                    digitElement.style.transform = 'scale(1.2)';
+                    digitElement.style.color = '#ff3838';
+                    
+                    setTimeout(() => {
+                        digitElement.style.transform = 'scale(1)';
+                        digitElement.style.color = '#fff';
+                    }, 150);
+                }
             });
         }
 
