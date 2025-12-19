@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Аватар</title>
     <style>
-        /* Существующие стили остаются без изменений */
+        /* Существующие стили остаются */
         #background-video {
             position: fixed;
             top: 0;
@@ -199,7 +199,7 @@
             flex-shrink: 0;
         }
         
-        /* НОВЫЕ СТИЛИ ДЛЯ DISCORD АКТИВНОСТИ */
+        /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ DISCORD АКТИВНОСТИ */
         .discord-section {
             display: flex;
             flex-direction: column;
@@ -233,14 +233,13 @@
         
         .discord-status {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             height: 50px;
             min-height: 50px;
             background: rgba(61, 59, 60, 0.3);
             border-radius: 12px;
-            padding: 10px 20px;
+            padding: 0 20px;
             border: 1px solid #444;
             width: 100%;
             max-width: 400px;
@@ -252,13 +251,13 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background-color: #57F287;
             position: relative;
-            animation: pulse 2s infinite;
+            flex-shrink: 0;
         }
         
         .status-indicator.online {
             background-color: #57F287;
+            animation: pulse 2s infinite;
         }
         
         .status-indicator.idle {
@@ -269,18 +268,34 @@
             background-color: #ED4245;
         }
         
+        .status-indicator.offline {
+            background-color: #747F8D;
+        }
+        
+        .discord-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 10px;
+        }
+        
         .status-text {
             font-size: 15px;
             color: #fff;
             font-weight: 500;
             flex-grow: 1;
-            text-align: center;
         }
         
         .game-info {
             font-size: 13px;
             color: #aaa;
             font-weight: 400;
+            text-align: right;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .discord-popup {
@@ -289,24 +304,24 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.95);
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10000;
             padding: 20px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
         
         .discord-popup-content {
             background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
             border-radius: 20px;
             padding: 30px;
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
             border: 1px solid #5865F2;
-            box-shadow: 0 15px 35px rgba(88, 101, 242, 0.2);
+            box-shadow: 0 15px 35px rgba(88, 101, 242, 0.25);
             position: relative;
             animation: popupSlide 0.3s ease-out;
         }
@@ -361,10 +376,12 @@
             justify-content: center;
             font-size: 24px;
             color: white;
+            flex-shrink: 0;
         }
         
         .activity-details {
             flex-grow: 1;
+            min-width: 0;
         }
         
         .activity-name {
@@ -372,11 +389,17 @@
             font-weight: 600;
             color: #fff;
             margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .activity-state {
             font-size: 14px;
             color: #aaa;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .activity-time {
@@ -699,6 +722,7 @@
             height: 100%;
         }
         
+        /* Адаптивность для Discord активности */
         @media (max-width: 768px) {
             .container {
                 gap: 25px;
@@ -736,7 +760,7 @@
             .discord-status {
                 height: 45px;
                 min-height: 45px;
-                padding: 8px 15px;
+                padding: 0 15px;
             }
             
             .status-text {
@@ -745,6 +769,7 @@
             
             .game-info {
                 font-size: 12px;
+                max-width: 120px;
             }
             
             .buttons-container {
@@ -838,7 +863,7 @@
             .discord-status {
                 height: 40px;
                 min-height: 40px;
-                padding: 6px 12px;
+                padding: 0 12px;
             }
             
             .status-text {
@@ -847,6 +872,7 @@
             
             .game-info {
                 font-size: 11px;
+                max-width: 100px;
             }
             
             .buttons-container {
@@ -892,6 +918,11 @@
                 font-size: 32px;
             }
             
+            .discord-status {
+                height: 40px;
+                min-height: 40px;
+            }
+            
             .sound-toggle {
                 width: 32px;
                 height: 32px;
@@ -930,7 +961,16 @@
             .discord-status {
                 height: 35px;
                 min-height: 35px;
-                padding: 5px 10px;
+                padding: 0 10px;
+            }
+            
+            .status-text {
+                font-size: 12px;
+            }
+            
+            .game-info {
+                font-size: 10px;
+                max-width: 80px;
             }
             
             .buttons-container {
@@ -963,9 +1003,45 @@
                 flex: 1;
             }
             
+            .discord-status {
+                max-width: 300px;
+            }
+            
             .sound-toggle {
                 top: 10px;
                 left: 10px;
+            }
+        }
+        
+        /* Для больших экранов */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 650px;
+            }
+            
+            .discord-status {
+                max-width: 450px;
+            }
+        }
+        
+        /* Для очень больших экранов */
+        @media (min-width: 1600px) {
+            .container {
+                max-width: 700px;
+                gap: 40px;
+            }
+            
+            .avatar-container {
+                width: 300px;
+                height: 300px;
+            }
+            
+            .name-text {
+                font-size: 48px;
+            }
+            
+            .discord-status {
+                max-width: 500px;
             }
         }
         
@@ -978,12 +1054,6 @@
         
         * {
             max-height: 1000000px;
-        }
-        
-        @media (min-width: 1200px) {
-            .container {
-                max-width: 650px;
-            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1010,7 +1080,7 @@
         <div class="discord-popup-content">
             <div class="popup-header">
                 <i class="fab fa-discord"></i>
-                <h3>Мой Discord Статус</h3>
+                <h3>Discord Статус</h3>
                 <div class="close-popup" id="closePopup">
                     <i class="fas fa-times"></i>
                 </div>
@@ -1018,27 +1088,37 @@
             <div class="popup-body">
                 <div class="activity-item">
                     <div class="activity-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-details">
+                        <div class="activity-name" id="popupUsername">Fresko</div>
+                        <div class="activity-state" id="popupStatus">Загрузка...</div>
+                        <div class="activity-time">Discord ID: 1199383843828940880</div>
+                    </div>
+                </div>
+                <div class="activity-item" id="popupActivityItem">
+                    <div class="activity-icon">
                         <i class="fas fa-gamepad"></i>
                     </div>
                     <div class="activity-details">
-                        <div class="activity-name" id="popupGameName">Загрузка...</div>
-                        <div class="activity-state" id="popupGameState">Обновляется...</div>
+                        <div class="activity-name" id="popupGameName">Не активен</div>
+                        <div class="activity-state" id="popupGameState">Нет активной игры</div>
                         <div class="activity-time" id="popupGameTime"></div>
                     </div>
                 </div>
-                <div class="activity-item">
+                <div class="activity-item" id="popupListeningItem" style="display: none;">
                     <div class="activity-icon">
-                        <i class="fas fa-headphones"></i>
+                        <i class="fab fa-spotify"></i>
                     </div>
                     <div class="activity-details">
-                        <div class="activity-name">В сети</div>
-                        <div class="activity-state" id="popupStatus">Подключение к Discord...</div>
-                        <div class="activity-time">Discord: Fresko#0001</div>
+                        <div class="activity-name" id="popupListeningTitle">Слушает Spotify</div>
+                        <div class="activity-state" id="popupListeningArtist">Исполнитель</div>
+                        <div class="activity-time" id="popupListeningTime"></div>
                     </div>
                 </div>
             </div>
             <div class="popup-footer">
-                Статус обновляется в реальном времени
+                Статус обновляется в реальном времени • Последнее обновление: <span id="lastUpdate">сейчас</span>
             </div>
         </div>
     </div>
@@ -1084,16 +1164,18 @@
                     </div>
                 </div>
                 
-                <!-- НОВЫЙ БЛОК DISCORD АКТИВНОСТИ -->
+                <!-- ОБНОВЛЕННЫЙ БЛОК DISCORD АКТИВНОСТИ -->
                 <div class="discord-section" id="discordActivity">
                     <div class="discord-label">
                         <i class="fab fa-discord"></i>
                         Discord активность
                     </div>
                     <div class="discord-status">
-                        <div class="status-indicator online" id="statusIndicator"></div>
-                        <div class="status-text" id="statusText">В сети</div>
-                        <div class="game-info" id="gameInfo">Загрузка...</div>
+                        <div class="discord-content">
+                            <div class="status-indicator" id="statusIndicator"></div>
+                            <div class="status-text" id="statusText">Загрузка...</div>
+                            <div class="game-info" id="gameInfo">Подключение</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1132,10 +1214,13 @@
     </div>
 
     <script>
-        // === ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ ===
+        // === НАСТРОЙКИ SUPABASE ===
         const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
-        // === КОНЕЦ ЗАМЕНЫ ===
+        // === КОНЕЦ НАСТРОЕК SUPABASE ===
+        
+        // Discord ID пользователя
+        const DISCORD_USER_ID = '1199383843828940880';
         
         // Инициализация Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1144,23 +1229,10 @@
         let backgroundMusic;
         let isMusicPlaying = true;
         let permissionsGranted = false;
-        
-        // Discord активность (имитация - здесь можно подключить Discord API)
-        const discordStatus = {
-            online: true,
-            status: 'В сети',
-            game: {
-                name: 'Call of Duty: Modern Warfare',
-                state: 'Играет в мультиплеер',
-                time: '2 часа 15 минут'
-            },
-            spotify: {
-                listening: true,
-                track: 'Travis Scott - SICKO MODE',
-                artist: 'Travis Scott'
-            }
-        };
-        
+        let discordData = null;
+        let discordUpdateInterval = null;
+        let counterLoaded = false;
+
         document.addEventListener('DOMContentLoaded', function() {
             const permissionModal = document.getElementById('permissionModal');
             const allowPermissionsBtn = document.getElementById('allowPermissions');
@@ -1250,28 +1322,6 @@
                                 }
                             }).catch(e => {
                                 console.log("Ошибка воспроизведения музыки:", e.message);
-                                // Если не удалось, показываем кнопку и пробуем при следующем взаимодействии
-                                const tryPlayOnInteraction = () => {
-                                    backgroundMusic.play().then(() => {
-                                        console.log("Музыка запущена после взаимодействия");
-                                        if (isMuted) {
-                                            backgroundMusic.muted = true;
-                                            soundToggle.classList.add('muted');
-                                            isMusicPlaying = false;
-                                        } else {
-                                            backgroundMusic.muted = false;
-                                            soundToggle.classList.remove('muted');
-                                            isMusicPlaying = true;
-                                        }
-                                        document.removeEventListener('click', tryPlayOnInteraction);
-                                        document.removeEventListener('touchstart', tryPlayOnInteraction);
-                                    }).catch(err => {
-                                        console.log("Не удалось запустить музыку:", err.message);
-                                    });
-                                };
-                                
-                                document.addEventListener('click', tryPlayOnInteraction);
-                                document.addEventListener('touchstart', tryPlayOnInteraction);
                             });
                         }
                     }
@@ -1399,109 +1449,384 @@
                 });
             });
         }
+
+        // ========== DISCORD API ФУНКЦИИ ==========
         
-        // Функция обновления Discord статуса
-        function updateDiscordStatus() {
+        async function getDiscordStatus() {
+            try {
+                // Используем Lanyard API для получения статуса Discord
+                const response = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    discordData = data.data;
+                    updateDiscordDisplay(discordData);
+                    
+                    // Сохраняем данные в Supabase
+                    await saveDiscordActivityToSupabase(discordData);
+                    
+                    return discordData;
+                } else {
+                    throw new Error('API returned unsuccessful response');
+                }
+                
+            } catch (error) {
+                console.warn('Ошибка при получении статуса Discord:', error);
+                
+                // В случае ошибки используем данные из Supabase или локальные
+                return await getLastDiscordActivityFromSupabase();
+            }
+        }
+        
+        async function saveDiscordActivityToSupabase(data) {
+            try {
+                const { error } = await supabase
+                    .from('discord_activity')
+                    .insert({
+                        discord_id: DISCORD_USER_ID,
+                        status: data.discord_status || 'offline',
+                        username: data.discord_user?.username || 'Fresko',
+                        activities: JSON.stringify(data.activities || []),
+                        listening_to_spotify: data.listening_to_spotify || false,
+                        spotify: data.spotify ? JSON.stringify(data.spotify) : null,
+                        updated_at: new Date().toISOString()
+                    });
+                
+                if (error) {
+                    console.warn('Ошибка сохранения Discord активности:', error);
+                }
+            } catch (error) {
+                console.warn('Ошибка при сохранении в Supabase:', error);
+            }
+        }
+        
+        async function getLastDiscordActivityFromSupabase() {
+            try {
+                const { data, error } = await supabase
+                    .from('discord_activity')
+                    .select('*')
+                    .eq('discord_id', DISCORD_USER_ID)
+                    .order('updated_at', { ascending: false })
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    const activity = data[0];
+                    discordData = {
+                        discord_status: activity.status,
+                        discord_user: { username: activity.username },
+                        activities: JSON.parse(activity.activities || '[]'),
+                        listening_to_spotify: activity.listening_to_spotify,
+                        spotify: activity.spotify ? JSON.parse(activity.spotify) : null
+                    };
+                    
+                    updateDiscordDisplay(discordData);
+                    return discordData;
+                }
+            } catch (error) {
+                console.warn('Ошибка при получении Discord активности из Supabase:', error);
+            }
+            
+            // Если данных нет, возвращаем базовый статус
+            return {
+                discord_status: 'offline',
+                discord_user: { username: 'Fresko' },
+                activities: []
+            };
+        }
+        
+        function updateDiscordDisplay(data) {
             const statusIndicator = document.getElementById('statusIndicator');
             const statusText = document.getElementById('statusText');
             const gameInfo = document.getElementById('gameInfo');
             
-            // Список возможных игр и активностей
-            const activities = [
-                {
-                    game: 'Call of Duty: Modern Warfare',
-                    status: 'В мультиплеере',
-                    time: '2ч 15м',
-                    color: '#57F287'
-                },
-                {
-                    game: 'Spotify',
-                    status: 'Слушает: Travis Scott - SICKO MODE',
-                    time: '45 минут',
-                    color: '#1DB954'
-                },
-                {
-                    game: 'Discord',
-                    status: 'В голосовом канале',
-                    time: '1ч 30м',
-                    color: '#5865F2'
-                },
-                {
-                    game: 'Counter-Strike 2',
-                    status: 'Соревновательный матч',
-                    time: '55 минут',
-                    color: '#ED4245'
-                },
-                {
-                    game: 'В сети',
-                    status: 'Отвечает на сообщения',
-                    time: 'недавно',
-                    color: '#57F287'
+            // Обновляем статус
+            const status = data.discord_status || 'offline';
+            statusIndicator.className = 'status-indicator ' + status;
+            
+            // Русские названия статусов
+            const statusTranslations = {
+                'online': 'В сети',
+                'idle': 'Не активен',
+                'dnd': 'Не беспокоить',
+                'offline': 'Не в сети'
+            };
+            
+            statusText.textContent = statusTranslations[status] || 'Не в сети';
+            
+            // Проверяем активность
+            let activityText = 'Не активен';
+            
+            if (data.listening_to_spotify && data.spotify) {
+                // Пользователь слушает Spotify
+                const track = data.spotify.track || 'Трек';
+                const artist = data.spotify.artist || 'Исполнитель';
+                activityText = `${track} - ${artist}`;
+            } else if (data.activities && data.activities.length > 0) {
+                // Есть другая активность
+                const activity = data.activities[0];
+                activityText = activity.name || 'Играет';
+                
+                if (activity.details) {
+                    activityText = activity.details;
                 }
-            ];
-            
-            // Случайный выбор активности
-            const randomIndex = Math.floor(Math.random() * activities.length);
-            const activity = activities[randomIndex];
-            
-            // Обновляем отображение
-            statusIndicator.className = 'status-indicator';
-            statusIndicator.style.backgroundColor = activity.color;
-            
-            statusText.textContent = 'В сети';
-            
-            // Для Spotify показываем иконку
-            if (activity.game === 'Spotify') {
-                gameInfo.innerHTML = `<i class="fab fa-spotify" style="color: #1DB954;"></i> ${activity.status}`;
-            } else {
-                gameInfo.textContent = activity.game;
             }
             
-            // Обновляем попап
-            updateDiscordPopup(activity);
+            // Обрезаем текст, если слишком длинный
+            if (activityText.length > 25) {
+                activityText = activityText.substring(0, 22) + '...';
+            }
             
-            // Обновляем статус каждые 30-60 секунд
-            const nextUpdate = 30000 + Math.random() * 30000;
-            setTimeout(updateDiscordStatus, nextUpdate);
+            gameInfo.textContent = activityText;
+            
+            // Обновляем время последнего обновления
+            updateLastUpdateTime();
         }
         
-        // Функция обновления Discord попапа
-        function updateDiscordPopup(activity = null) {
+        function updateDiscordPopup() {
+            if (!discordData) return;
+            
+            const popupUsername = document.getElementById('popupUsername');
+            const popupStatus = document.getElementById('popupStatus');
             const popupGameName = document.getElementById('popupGameName');
             const popupGameState = document.getElementById('popupGameState');
             const popupGameTime = document.getElementById('popupGameTime');
-            const popupStatus = document.getElementById('popupStatus');
+            const popupActivityItem = document.getElementById('popupActivityItem');
+            const popupListeningItem = document.getElementById('popupListeningItem');
+            const popupListeningTitle = document.getElementById('popupListeningTitle');
+            const popupListeningArtist = document.getElementById('popupListeningArtist');
+            const popupListeningTime = document.getElementById('popupListeningTime');
             
-            if (!activity) {
-                // Получаем текущую активность из основного блока
-                const gameInfo = document.getElementById('gameInfo');
-                if (gameInfo.textContent.includes('Spotify')) {
-                    activity = {
-                        game: 'Spotify',
-                        status: gameInfo.textContent.replace('Spotify - ', ''),
-                        time: '45 минут'
-                    };
+            // Обновляем имя пользователя
+            popupUsername.textContent = discordData.discord_user?.username || 'Fresko';
+            
+            // Обновляем статус
+            const statusTranslations = {
+                'online': 'В сети • Активен',
+                'idle': 'Не активен',
+                'dnd': 'Не беспокоить • Занят',
+                'offline': 'Не в сети'
+            };
+            
+            popupStatus.textContent = statusTranslations[discordData.discord_status] || 'Не в сети';
+            
+            // Проверяем Spotify
+            if (discordData.listening_to_spotify && discordData.spotify) {
+                popupActivityItem.style.display = 'none';
+                popupListeningItem.style.display = 'flex';
+                
+                popupListeningTitle.textContent = discordData.spotify.track || 'Слушает музыку';
+                popupListeningArtist.textContent = discordData.spotify.artist || 'Spotify';
+                
+                if (discordData.spotify.timestamps) {
+                    const startTime = new Date(discordData.spotify.timestamps.start);
+                    const now = new Date();
+                    const minutes = Math.floor((now - startTime) / 60000);
+                    popupListeningTime.textContent = `Слушает: ${minutes} мин`;
                 } else {
-                    activity = {
-                        game: gameInfo.textContent,
-                        status: 'Играет',
-                        time: '2 часа 15 минут'
-                    };
+                    popupListeningTime.textContent = 'Слушает Spotify';
                 }
+            } else if (discordData.activities && discordData.activities.length > 0) {
+                // Показываем активность
+                popupActivityItem.style.display = 'flex';
+                popupListeningItem.style.display = 'none';
+                
+                const activity = discordData.activities[0];
+                popupGameName.textContent = activity.name || 'Не активен';
+                popupGameState.textContent = activity.details || 'Нет дополнительной информации';
+                
+                if (activity.state) {
+                    popupGameState.textContent = activity.state;
+                }
+                
+                if (activity.timestamps && activity.timestamps.start) {
+                    const startTime = new Date(activity.timestamps.start);
+                    const now = new Date();
+                    const minutes = Math.floor((now - startTime) / 60000);
+                    popupGameTime.textContent = `Играет: ${minutes} мин`;
+                } else {
+                    popupGameTime.textContent = 'Активность';
+                }
+            } else {
+                popupActivityItem.style.display = 'flex';
+                popupListeningItem.style.display = 'none';
+                popupGameName.textContent = 'Не активен';
+                popupGameState.textContent = 'Нет активной игры или активности';
+                popupGameTime.textContent = '';
             }
             
-            popupGameName.textContent = activity.game;
-            popupGameState.textContent = activity.status;
-            popupGameTime.textContent = `Время: ${activity.time}`;
-            popupStatus.textContent = discordStatus.online ? 'В сети • Активен' : 'Не в сети';
+            updateLastUpdateTime();
         }
         
-        async function initializeContent() {
+        function updateLastUpdateTime() {
+            const lastUpdateElement = document.getElementById('lastUpdate');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            lastUpdateElement.textContent = timeString;
+        }
+        
+        // Функция для периодического обновления Discord статуса
+        function startDiscordUpdates() {
+            // Первый запрос
+            getDiscordStatus();
+            
+            // Обновляем каждые 30 секунд
+            discordUpdateInterval = setInterval(() => {
+                getDiscordStatus();
+            }, 30000);
+        }
+        
+        // ========== СИСТЕМА СЧЕТЧИКА ПОСЕЩЕНИЙ ==========
+        
+        async function updateVisitCounter() {
+            try {
+                if (counterLoaded) return;
+                
+                // Создаем уникальный ID посещения на основе IP и времени
+                const visitId = generateVisitId();
+                
+                // Проверяем, было ли уже это посещение
+                const hasVisited = localStorage.getItem('fresko_visit_id') === visitId;
+                
+                if (!hasVisited) {
+                    // Записываем посещение локально
+                    localStorage.setItem('fresko_visit_id', visitId);
+                    
+                    // Увеличиваем локальный счетчик
+                    let localCount = localStorage.getItem('fresko_counter_all');
+                    localCount = localCount ? parseInt(localCount) + 1 : 1;
+                    localStorage.setItem('fresko_counter_all', localCount);
+                    
+                    // Отправляем посещение в Supabase
+                    const { error } = await supabase
+                        .from('visits')
+                        .insert([{
+                            visitor_id: visitId,
+                            user_agent: navigator.userAgent,
+                            ip_address: await getClientIP(),
+                            visited_at: new Date().toISOString(),
+                            is_unique: true
+                        }]);
+                    
+                    if (error) {
+                        console.warn('Ошибка записи в Supabase:', error);
+                    }
+                }
+                
+                // Получаем общее количество посещений
+                const totalVisits = await getTotalVisits();
+                displayCounter(totalVisits);
+                counterLoaded = true;
+                
+            } catch (error) {
+                console.error('Ошибка при обновлении счетчика:', error);
+                // Показываем локальный счетчик в случае ошибки
+                const localCount = localStorage.getItem('fresko_counter_all') || '0';
+                displayCounter(parseInt(localCount));
+            }
+        }
+        
+        async function getTotalVisits() {
+            try {
+                // Способ 1: Используем count
+                const { count, error: countError } = await supabase
+                    .from('visits')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (!countError && count !== null) {
+                    return count;
+                }
+                
+                // Способ 2: Если способ 1 не работает, пробуем получить все записи
+                const { data, error: dataError } = await supabase
+                    .from('visits')
+                    .select('id');
+                
+                if (!dataError && data) {
+                    return data.length;
+                }
+                
+                throw new Error('Не удалось получить количество посещений');
+                
+            } catch (error) {
+                console.warn('Ошибка получения количества посещений:', error);
+                
+                // Используем локальный счетчик
+                const localCount = localStorage.getItem('fresko_counter_all');
+                return localCount ? parseInt(localCount) : 0;
+            }
+        }
+        
+        function generateVisitId() {
+            // Создаем уникальный ID на основе времени и случайных данных
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(2, 15);
+            return `visit_${timestamp}_${random}`;
+        }
+        
+        async function getClientIP() {
+            try {
+                // Пытаемся получить IP через внешний сервис
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                // В случае ошибки возвращаем localhost
+                return '127.0.0.1';
+            }
+        }
+        
+        function displayCounter(number) {
+            const display = document.getElementById('counterDisplay');
+            if (!display) return;
+            
+            display.innerHTML = '';
+            
             const IMAGE_PATHS = {
                 0: '0.png', 1: '1.png', 2: '2.png', 3: '3.png', 4: '4.png',
                 5: '5.png', 6: '6.png', 7: '7.png', 8: '8.png', 9: '9.png'
             };
             
+            const digits = number.toString().split('');
+            
+            digits.forEach(digit => {
+                const container = document.createElement('div');
+                container.className = 'digit-container';
+                
+                const img = document.createElement('img');
+                img.className = 'digit-image';
+                img.src = IMAGE_PATHS[digit];
+                img.alt = digit;
+                img.loading = 'lazy';
+                
+                const fallback = document.createElement('div');
+                fallback.className = 'digit-fallback';
+                fallback.textContent = digit;
+                
+                img.onerror = function() {
+                    img.style.display = 'none';
+                    fallback.style.display = 'block';
+                };
+                
+                container.appendChild(img);
+                container.appendChild(fallback);
+                display.appendChild(container);
+            });
+        }
+        
+        // ========== ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ==========
+        
+        async function initializeContent() {
             // Проверка поддержки видео формата
             function checkVideoSupport() {
                 const avatarVideo = document.querySelector('.avatar-video');
@@ -1509,16 +1834,14 @@
                 
                 if (!avatarVideo || !avatarImage) return;
                 
-                // Проверяем, загружается ли видео
                 avatarVideo.addEventListener('error', function() {
                     console.log('Ошибка загрузки видео, показываем фото');
                     avatarVideo.style.display = 'none';
                     avatarImage.style.display = 'block';
                 });
                 
-                // Проверяем, воспроизводится ли видео
                 setTimeout(function() {
-                    if (avatarVideo.readyState < 2) { // Меньше HAVE_CURRENT_DATA
+                    if (avatarVideo.readyState < 2) {
                         console.log('Видео не загрузилось, показываем фото');
                         avatarVideo.style.display = 'none';
                         avatarImage.style.display = 'block';
@@ -1526,148 +1849,11 @@
                 }, 3000);
             }
             
-            // Функция отображения счетчика
-            function displayCounter(number) {
-                const display = document.getElementById('counterDisplay');
-                if (!display) return;
-                
-                display.innerHTML = '';
-                
-                const digits = number.toString().split('');
-                
-                digits.forEach(digit => {
-                    const container = document.createElement('div');
-                    container.className = 'digit-container';
-                    
-                    const img = document.createElement('img');
-                    img.className = 'digit-image';
-                    img.src = IMAGE_PATHS[digit];
-                    img.alt = digit;
-                    img.loading = 'lazy';
-                    
-                    const fallback = document.createElement('div');
-                    fallback.className = 'digit-fallback';
-                    fallback.textContent = digit;
-                    
-                    img.onerror = function() {
-                        img.style.display = 'none';
-                        fallback.style.display = 'block';
-                    };
-                    
-                    container.appendChild(img);
-                    container.appendChild(fallback);
-                    display.appendChild(container);
-                });
-            }
+            // Запускаем обновление счетчика
+            await updateVisitCounter();
             
-            // Генерация ID посещения
-            function generateVisitId() {
-                return 'visit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 12);
-            }
-            
-            // ОБНОВЛЕННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ СЧЕТЧИКА - БОЛЕЕ НАДЕЖНАЯ
-            async function updateVisitCounter() {
-                try {
-                    // Создаем уникальный ID для этого посещения
-                    const visitId = generateVisitId();
-                    
-                    // Записываем посещение локально сразу
-                    incrementLocalCounter();
-                    
-                    // Отправляем посещение в Supabase
-                    const { error } = await supabase
-                        .from('visits')
-                        .insert([{
-                            visitor_id: visitId,
-                            visited_at: new Date().toISOString(),
-                            is_unique: false
-                        }]);
-                    
-                    if (error) {
-                        console.warn('Ошибка записи в Supabase:', error);
-                        // Возвращаем локальный счетчик
-                        return getLocalCounter();
-                    }
-                    
-                    // Пытаемся получить общее количество посещений из Supabase
-                    try {
-                        // Способ 1: Используем count
-                        const { count, error: countError } = await supabase
-                            .from('visits')
-                            .select('*', { count: 'exact', head: true });
-                        
-                        if (!countError && count !== null) {
-                            return Math.max(count, getLocalCounter());
-                        }
-                        
-                        // Способ 2: Если способ 1 не работает, пробуем получить все записи
-                        const { data, error: dataError } = await supabase
-                            .from('visits')
-                            .select('id');
-                        
-                        if (!dataError && data) {
-                            return Math.max(data.length, getLocalCounter());
-                        }
-                        
-                    } catch (countErr) {
-                        console.warn('Ошибка получения количества:', countErr);
-                    }
-                    
-                    // Если все способы не сработали, используем локальный счетчик
-                    return getLocalCounter();
-                    
-                } catch (error) {
-                    console.error('Критическая ошибка при обновлении счетчика:', error);
-                    return getLocalCounter();
-                }
-            }
-            
-            // Локальный счетчик (запасной вариант)
-            function getLocalCounter() {
-                let count = localStorage.getItem('fresko_counter_all');
-                if (!count) {
-                    count = 0; // Начинаем с 0
-                    localStorage.setItem('fresko_counter_all', count);
-                }
-                return parseInt(count);
-            }
-            
-            function incrementLocalCounter() {
-                let count = localStorage.getItem('fresko_counter_all');
-                count = count ? parseInt(count) + 1 : 1;
-                localStorage.setItem('fresko_counter_all', count);
-                return count;
-            }
-            
-            // Инициализация счетчика - с повторными попытками
-            async function initCounterWithRetry(retries = 3) {
-                for (let i = 0; i < retries; i++) {
-                    try {
-                        console.log(`Попытка ${i + 1} инициализации счетчика...`);
-                        const totalVisits = await updateVisitCounter();
-                        console.log('Получено посещений:', totalVisits);
-                        displayCounter(totalVisits);
-                        return; // Успешно
-                    } catch (error) {
-                        console.error(`Ошибка при попытке ${i + 1}:`, error);
-                        
-                        if (i === retries - 1) {
-                            // Последняя попытка не удалась, показываем локальный счетчик
-                            const localCount = getLocalCounter();
-                            displayCounter(localCount);
-                        } else {
-                            // Ждем перед следующей попыткой
-                            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-                        }
-                    }
-                }
-            }
-            
-            // Запускаем инициализацию счетчика
-            initCounterWithRetry();
-            
-            // Запускаем Discord активность
-            setTimeout(updateDiscordStatus, 1000);
+            // Запускаем Discord обновления
+            startDiscordUpdates();
             
             // Проверяем поддержку видео
             checkVideoSupport();
@@ -1709,6 +1895,13 @@
         // Отключение прокрутки
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
+        
+        // Очистка интервалов при закрытии страницы
+        window.addEventListener('beforeunload', () => {
+            if (discordUpdateInterval) {
+                clearInterval(discordUpdateInterval);
+            }
+        });
     </script>
 </body>
 </html>
