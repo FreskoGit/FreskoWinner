@@ -38,6 +38,13 @@
         @media (min-width:768px){.avatar-container{width:200px;height:200px}.name-text{font-size:32px}.phone-text{font-size:16px}.buttons-container{grid-template-columns:repeat(3,1fr);max-width:500px}.btn{height:55px;font-size:14px}}
         @media (max-width:480px){.container{padding:10px;gap:15px}.avatar-container{width:150px;height:150px}.name-text{font-size:24px}.counter-display{height:45px;padding:0 10px}.digit{font-size:20px}.buttons-container{gap:8px}.btn{height:45px;font-size:12px}}
         .loading-text{color:#aaa;font-size:14px}
+        /* Уведомления */
+        .notification{position:fixed;top:20px;right:20px;padding:15px 20px;border-radius:10px;color:white;z-index:9999;animation:slideIn 0.3s ease;max-width:400px;box-shadow:0 5px 15px rgba(0,0,0,0.3);display:flex;align-items:center;gap:10px}
+        .notification.success{background:linear-gradient(145deg,#28a745,#218838)}
+        .notification.error{background:linear-gradient(145deg,#dc3545,#c82333)}
+        .notification.info{background:linear-gradient(145deg,#17a2b8,#138496)}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        .notification-close{margin-left:auto;background:none;border:none;color:white;cursor:pointer}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -79,7 +86,7 @@
                 <i class="fab fa-telegram btn-icon"></i>
                 <span>Каналы</span>
             </a>
-            <a href="https://t.me/FreskoKeySeller_bot" target="_blank" class="btn">
+            <a href="https://t.me/FreskoKeySeller_bot" target="_blank" class="btn" id="storeBtn">
                 <i class="fas fa-store btn-icon"></i>
                 <span>Магазин</span>
             </a>
@@ -114,6 +121,7 @@
         let isMusicPlaying = true;
         let supabaseClient = null;
         let currentVisitCount = 0;
+        let clickCounters = {};
 
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Главная страница загружена');
@@ -126,15 +134,209 @@
                 console.log('Supabase подключен');
             } catch (error) {
                 console.error('Ошибка Supabase:', error);
+                showNotification('Ошибка подключения к серверу', 'error');
             }
             
+            // Проверяем авторизацию в системе кейсов
+            await checkCaseSystemAuth();
+            
+            // Увеличиваем счетчик посещений
             await incrementCounter('main_page_visits');
+            
+            // Загружаем и отображаем счетчик
             await loadCounter('main_page_visits');
+            
             setupAvatar();
+            setupClickTracking();
             
             document.addEventListener('gesturestart', (e) => e.preventDefault());
             document.addEventListener('dblclick', (e) => e.preventDefault());
         });
+
+        async function checkCaseSystemAuth() {
+            try {
+                const token = localStorage.getItem('fresko_auth_token');
+                const user = localStorage.getItem('fresko_user');
+                
+                if (token && user) {
+                    // Обновляем иконку кейсов если пользователь авторизован
+                    const caseToggle = document.querySelector('.case-toggle');
+                    if (caseToggle) {
+                        caseToggle.innerHTML = '<i class="fas fa-box-open"></i>';
+                        caseToggle.href = 'case-main.html';
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка проверки авторизации кейсов:', error);
+            }
+        }
+
+        async function incrementCounter(counterId) {
+            try {
+                if (!supabaseClient) {
+                    incrementLocalCounter(counterId);
+                    return;
+                }
+                
+                const sessionKey = `visited_${counterId}`;
+                if (sessionStorage.getItem(sessionKey)) {
+                    console.log(`Страница ${counterId} уже посещалась в этой сессии`);
+                    return;
+                }
+                
+                // Используем функцию из базы данных
+                const { data, error } = await supabaseClient.rpc(
+                    'increment_page_counter',
+                    { page_id: counterId, page_name: 'Главная страница' }
+                );
+                
+                if (error) {
+                    console.warn('Не удалось увеличить счетчик в БД:', error);
+                    incrementLocalCounter(counterId);
+                }
+                
+                sessionStorage.setItem(sessionKey, 'true');
+                
+            } catch (error) {
+                console.error('Ошибка увеличения счетчика:', error);
+                incrementLocalCounter(counterId);
+            }
+        }
+
+        function incrementLocalCounter(counterId) {
+            const key = `fresko_counter_${counterId}`;
+            let count = parseInt(localStorage.getItem(key)) || 0;
+            count++;
+            localStorage.setItem(key, count.toString());
+            return count;
+        }
+
+        async function loadCounter(counterId) {
+            try {
+                let count = 0;
+                
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('page_counters')
+                        .select('count')
+                        .eq('id', counterId)
+                        .single();
+                    
+                    if (!error && data) {
+                        count = data.count;
+                    } else {
+                        count = getLocalCounter(counterId);
+                    }
+                } else {
+                    count = getLocalCounter(counterId);
+                }
+                
+                currentVisitCount = count;
+                displayCounter(count);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки счетчика:', error);
+                const count = getLocalCounter(counterId);
+                displayCounter(count);
+            }
+        }
+
+        function getLocalCounter(counterId) {
+            let localCount = localStorage.getItem(`fresko_counter_${counterId}`);
+            if (!localCount) {
+                localCount = 0;
+                localStorage.setItem(`fresko_counter_${counterId}`, localCount);
+            }
+            return parseInt(localCount);
+        }
+
+        function displayCounter(value) {
+            const counterDisplay = document.getElementById('counterDisplay');
+            if (!counterDisplay) return;
+            
+            counterDisplay.innerHTML = '';
+            
+            const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            const digits = formattedValue.split('');
+            
+            while (digits.length < 6) {
+                digits.unshift('0');
+            }
+            
+            digits.forEach((digit, index) => {
+                const digitElement = document.createElement('div');
+                digitElement.className = 'digit';
+                digitElement.textContent = digit;
+                
+                setTimeout(() => {
+                    digitElement.classList.add('new');
+                    setTimeout(() => {
+                        digitElement.classList.remove('new');
+                    }, 300);
+                }, index * 100);
+                
+                counterDisplay.appendChild(digitElement);
+            });
+        }
+
+        function setupClickTracking() {
+            // Отслеживаем клики по всем кнопкам
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', async function(e) {
+                    const url = this.getAttribute('href');
+                    const buttonText = this.textContent.trim();
+                    const buttonId = this.id || url.replace(/[^\w]/g, '_');
+                    
+                    if (url && !url.startsWith('#')) {
+                        e.preventDefault();
+                        
+                        // Увеличиваем счетчик кликов
+                        await incrementClickCounter(buttonId, buttonText, url);
+                        
+                        // Открываем ссылку
+                        if (url.startsWith('http')) {
+                            window.open(url, '_blank');
+                        } else {
+                            window.location.href = url;
+                        }
+                    }
+                });
+            });
+        }
+
+        async function incrementClickCounter(buttonId, buttonText, url) {
+            try {
+                if (!supabaseClient) {
+                    incrementLocalClickCounter(buttonId);
+                    return;
+                }
+                
+                // Используем функцию из базы данных
+                const { data, error } = await supabaseClient.rpc(
+                    'increment_click_counter',
+                    { click_id: buttonId, counter_name: buttonText, counter_url: url }
+                );
+                
+                if (error) {
+                    console.warn('Не удалось увеличить счетчик кликов в БД:', error);
+                    incrementLocalClickCounter(buttonId);
+                }
+                
+            } catch (error) {
+                console.error('Ошибка увеличения счетчика кликов:', error);
+                incrementLocalClickCounter(buttonId);
+            }
+        }
+
+        function incrementLocalClickCounter(buttonId) {
+            const key = `fresko_click_${buttonId}`;
+            let count = parseInt(localStorage.getItem(key)) || 0;
+            count++;
+            localStorage.setItem(key, count.toString());
+            clickCounters[buttonId] = count;
+            return count;
+        }
 
         function showLoading() {
             const counterDisplay = document.getElementById('counterDisplay');
@@ -160,7 +362,7 @@
             
             const unlockAudio = () => {
                 try {
-                    backgroundMusic.play().catch(e => console.log('Аудио:', e));
+                    backgroundMusic.play().catch(e => console.log('Автовоспроизведение заблокировано:', e));
                 } catch (e) {}
                 document.removeEventListener('click', unlockAudio);
                 document.removeEventListener('touchstart', unlockAudio);
@@ -195,98 +397,6 @@
             }
         }
 
-        async function incrementCounter(counterId) {
-            try {
-                if (!supabaseClient) return;
-                
-                const sessionKey = `visited_${counterId}`;
-                if (sessionStorage.getItem(sessionKey)) {
-                    console.log(`Страница ${counterId} уже посещалась в этой сессии`);
-                    return;
-                }
-                
-                const { data, error } = await supabaseClient
-                    .from('page_counters')
-                    .select('count')
-                    .eq('id', counterId)
-                    .single();
-                
-                if (error || !data) {
-                    await supabaseClient
-                        .from('page_counters')
-                        .insert({ 
-                            id: counterId, 
-                            page_name: 'Главная страница',
-                            count: 1 
-                        });
-                    sessionStorage.setItem(sessionKey, 'true');
-                } else {
-                    const newCount = data.count + 1;
-                    await supabaseClient
-                        .from('page_counters')
-                        .update({ count: newCount })
-                        .eq('id', counterId);
-                    sessionStorage.setItem(sessionKey, 'true');
-                }
-                
-            } catch (error) {
-                console.error('Ошибка увеличения счетчика:', error);
-            }
-        }
-
-        async function loadCounter(counterId) {
-            try {
-                let count = 0;
-                
-                if (supabaseClient) {
-                    const { data, error } = await supabaseClient
-                        .from('page_counters')
-                        .select('count')
-                        .eq('id', counterId)
-                        .single();
-                    
-                    if (!error && data) {
-                        count = data.count;
-                    }
-                }
-                
-                currentVisitCount = count;
-                displayCounter(count);
-                
-            } catch (error) {
-                console.error('Ошибка загрузки счетчика:', error);
-            }
-        }
-
-        function displayCounter(value) {
-            const counterDisplay = document.getElementById('counterDisplay');
-            if (!counterDisplay) return;
-            
-            counterDisplay.innerHTML = '';
-            
-            const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-            const digits = formattedValue.split('');
-            
-            while (digits.length < 3) {
-                digits.unshift('0');
-            }
-            
-            digits.forEach((digit, index) => {
-                const digitElement = document.createElement('div');
-                digitElement.className = 'digit';
-                digitElement.textContent = digit;
-                
-                setTimeout(() => {
-                    digitElement.classList.add('new');
-                    setTimeout(() => {
-                        digitElement.classList.remove('new');
-                    }, 300);
-                }, index * 100);
-                
-                counterDisplay.appendChild(digitElement);
-            });
-        }
-
         function setupAvatar() {
             const avatarVideo = document.querySelector('.avatar-video');
             const avatarImage = document.querySelector('.avatar-image');
@@ -304,6 +414,26 @@
                 avatarVideo.style.display = 'none';
                 avatarImage.style.display = 'block';
             });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
         }
 
         window.addEventListener('beforeunload', () => {
