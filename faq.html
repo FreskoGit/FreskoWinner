@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FAQ - Fresko Case System</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+        html,body{width:100%;height:100%;background:#000;color:#fff;font-family:'Segoe UI',system-ui,sans-serif}
+        body{padding:80px 20px 30px;max-width:800px;margin:0 auto}
+        .background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2}
+        #background-video{width:100%;height:100%;object-fit:cover;opacity:0.15}
+        .back-btn{position:fixed;top:15px;left:15px;width:40px;height:40px;background:rgba(61,59,60,0.9);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;z-index:1000;font-size:18px;transition:all 0.3s ease;text-decoration:none}
+        .back-btn:hover{transform:scale(1.1);background:#ff3838}
+        .page-title{font-size:32px;font-weight:700;background:linear-gradient(45deg,#ff3838,#ff5757);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center;margin-bottom:30px}
+        .faq-container{display:flex;flex-direction:column;gap:15px}
+        .faq-item{background:rgba(61,59,60,0.3);border-radius:15px;border:1px solid #444;overflow:hidden;transition:all 0.3s}
+        .faq-question{padding:20px;font-size:18px;font-weight:bold;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#fff}
+        .faq-question:hover{background:rgba(255,56,56,0.1)}
+        .faq-answer{padding:0 20px;max-height:0;overflow:hidden;transition:max-height 0.3s ease}
+        .faq-answer.active{padding:0 20px 20px;max-height:500px}
+        .faq-answer-content{color:#aaa;font-size:15px;line-height:1.6}
+        .faq-icon{color:#ff3838;transition:transform 0.3s}
+        .faq-item.active .faq-icon{transform:rotate(180deg)}
+        .contact-section{margin-top:40px;padding:30px;background:rgba(61,59,60,0.3);border-radius:15px;border:1px solid #444;text-align:center}
+        .contact-title{font-size:24px;margin-bottom:20px;color:#fff}
+        .contact-buttons{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+        .contact-btn{flex:1;min-width:200px;height:50px;background:linear-gradient(145deg,#ff3838,#ff5757);color:white;border:none;border-radius:10px;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;transition:all 0.3s}
+        .contact-btn:hover{background:linear-gradient(145deg,#ff5757,#ff3838);transform:translateY(-2px)}
+        @media (max-width:768px){.contact-buttons{flex-direction:column}.contact-btn{min-width:100%}}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background">
+        <video id="background-video" autoplay loop muted playsinline>
+            <source src="fon.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    <h1 class="page-title">Часто задаваемые вопросы</h1>
+    
+    <div class="faq-container">
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Как зарегистрироваться в системе?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    1. Перейдите на страницу входа<br>
+                    2. Нажмите кнопку "Регистрация"<br>
+                    3. Заполните все поля формы:<br>
+                    &nbsp;&nbsp;- Имя пользователя (3-20 символов)<br>
+                    &nbsp;&nbsp;- Email (будет использоваться для входа)<br>
+                    &nbsp;&nbsp;- Пароль (минимум 6 символов)<br>
+                    &nbsp;&nbsp;- Telegram тег (например: @username)<br>
+                    4. Примите условия использования<br>
+                    5. Нажмите "Зарегистрироваться"<br>
+                    6. Проверьте вашу почту для подтверждения
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Как пополнить баланс?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    На данный момент пополнение баланса возможно только через администратора системы.<br><br>
+                    Для пополнения:<br>
+                    1. Свяжитесь с администратором через Telegram: @FreskoWIN<br>
+                    2. Укажите сумму пополнения<br>
+                    3. Совершите перевод удобным способом<br>
+                    4. Администратор зачислит средства на ваш баланс<br><br>
+                    Минимальная сумма пополнения: 50 ₽<br>
+                    Максимальная сумма пополнения: 50,000 ₽
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Как купить кейс?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    1. Авторизуйтесь в системе<br>
+                    2. Перейдите в раздел "Кейсы"<br>
+                    3. Выберите понравившийся кейс<br>
+                    4. Нажмите кнопку "Купить кейс"<br>
+                    5. Подтвердите покупку в появившемся окне<br>
+                    6. Средства спишутся с вашего баланса<br>
+                    7. Вы получите предметы из кейса<br><br>
+                    <strong>Важно:</strong> Убедитесь, что на балансе достаточно средств для покупки.
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Как участвовать в розыгрышах?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    1. Авторизуйтесь в системе<br>
+                    2. Перейдите в раздел "Розыгрыши"<br>
+                    3. Выберите активный розыгрыш<br>
+                    4. Нажмите кнопку "Участвовать"<br>
+                    5. Дождитесь окончания розыгрыша<br>
+                    6. Победители выбираются автоматически<br><br>
+                    <strong>Правила:</strong><br>
+                    - Один пользователь может участвовать в каждом розыгрыше только один раз<br>
+                    - Количество победителей указано в описании розыгрыша<br>
+                    - Результаты публикуются после окончания розыгрыша
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Что делать, если забыл пароль?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    Если вы забыли пароль от своей учетной записи:<br><br>
+                    1. На странице входа нажмите "Забыли пароль?" (функция в разработке)<br>
+                    2. Или свяжитесь с администратором через Telegram: @FreskoWIN<br>
+                    3. Предоставьте информацию для идентификации:<br>
+                    &nbsp;&nbsp;- Email учетной записи<br>
+                    &nbsp;&nbsp;- Имя пользователя<br>
+                    &nbsp;&nbsp;- Telegram тег<br>
+                    4. Администратор сбросит ваш пароль и отправит новый<br><br>
+                    <strong>Рекомендация:</strong> После восстановления доступа смените пароль на новый.
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Как стать администратором?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    Статус администратора назначается только владельцем системы.<br><br>
+                    Чтобы получить права администратора:<br>
+                    1. Свяжитесь с владельцем через Telegram: @FreskoWIN<br>
+                    2. Объясните, зачем вам нужны права администратора<br>
+                    3. Пройдите проверку<br>
+                    4. Получите доступ к админ-панели<br><br>
+                    <strong>Обязанности администратора:</strong><br>
+                    - Управление пользователями<br>
+                    - Настройка системы<br>
+                    - Проведение розыгрышей<br>
+                    - Поддержка пользователей<br>
+                    - Модерация контента
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Почему не работает фоновая музыка?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    Фоновая музыка может не работать по нескольким причинам:<br><br>
+                    1. <strong>Настройки браузера:</strong> Некоторые браузеры блокируют автовоспроизведение<br>
+                    &nbsp;&nbsp;<em>Решение:</em> Нажмите на любую область страницы для разблокировки<br><br>
+                    2. <strong>Настройки звука:</strong> Музыка может быть отключена<br>
+                    &nbsp;&nbsp;<em>Решение:</em> Нажмите на иконку звука в правом верхнем углу<br><br>
+                    3. <strong>Проблемы с файлом:</strong> Файл музыки может быть поврежден<br>
+                    &nbsp;&nbsp;<em>Решение:</em> Сообщите администратору о проблеме<br><br>
+                    4. <strong>Блокировка рекламы:</strong> Некоторые блокировщики могут мешать<br>
+                    &nbsp;&nbsp;<em>Решение:</em> Добавьте сайт в исключения
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span>Как сообщить об ошибке?</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <div class="faq-answer-content">
+                    Если вы обнаружили ошибку в работе системы:<br><br>
+                    1. <strong>Соберите информацию:</strong><br>
+                    &nbsp;&nbsp;- Описание проблемы<br>
+                    &nbsp;&nbsp;- Шаги для воспроизведения<br>
+                    &nbsp;&nbsp;- Скриншоты или видео<br>
+                    &nbsp;&nbsp;- Браузер и устройство<br>
+                    &nbsp;&nbsp;- Время возникновения<br><br>
+                    2. <strong>Свяжитесь с поддержкой:</strong><br>
+                    &nbsp;&nbsp;- Telegram: @FreskoWIN<br>
+                    &nbsp;&nbsp;- Email: support@fresko.com<br>
+                    &nbsp;&nbsp;- Через форму обратной связи в системе<br><br>
+                    3. <strong>Будьте готовы ответить на уточняющие вопросы</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="contact-section">
+        <div class="contact-title">Не нашли ответ на свой вопрос?</div>
+        <div class="contact-buttons">
+            <a href="https://t.me/FreskoWIN" target="_blank" class="contact-btn">
+                <i class="fab fa-telegram"></i>
+                <span>Написать в Telegram</span>
+            </a>
+            <a href="mailto:support@fresko.com" class="contact-btn">
+                <i class="fas fa-envelope"></i>
+                <span>Отправить Email</span>
+            </a>
+            <button class="contact-btn" onclick="openFeedbackForm()">
+                <i class="fas fa-comment"></i>
+                <span>Форма обратной связи</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+            
+            // Закрываем все открытые FAQ
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                    item.querySelector('.faq-answer').classList.remove('active');
+                }
+            });
+            
+            // Переключаем текущий FAQ
+            faqItem.classList.toggle('active');
+            answer.classList.toggle('active');
+        }
+        
+        function openFeedbackForm() {
+            alert('Форма обратной связи (в разработке)\n\nПока что свяжитесь через Telegram: @FreskoWIN');
+        }
+        
+        // Открываем первый FAQ при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstFaq = document.querySelector('.faq-item');
+            if (firstFaq) {
+                firstFaq.classList.add('active');
+                firstFaq.querySelector('.faq-answer').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

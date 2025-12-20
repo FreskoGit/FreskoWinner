@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Каналы - Fresko</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+        html,body{width:100%;height:100%;overflow-y:auto;background:#000;color:#fff;font-family:'Segoe UI',system-ui,sans-serif}
+        body{padding:80px 15px 30px;display:flex;flex-direction:column;align-items:center}
+        .background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2}
+        #background-video{width:100%;height:100%;object-fit:cover;opacity:0.15}
+        .back-btn{position:fixed;top:15px;left:15px;width:40px;height:40px;background:rgba(61,59,60,0.9);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;z-index:1000;font-size:18px;transition:all 0.3s ease;text-decoration:none}
+        .back-btn:hover{transform:scale(1.1);background:#ff3838}
+        .sound-toggle{position:fixed;top:15px;right:15px;width:40px;height:40px;background:rgba(61,59,60,0.9);border:1px solid #444;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;cursor:pointer;z-index:1000;font-size:18px;transition:all 0.3s ease}
+        .sound-toggle:hover{transform:scale(1.1);background:#ff3838}
+        .sound-toggle.muted::after{content:'';position:absolute;top:50%;left:50%;width:24px;height:2px;background:#ff3838;transform:translate(-50%,-50%) rotate(45deg)}
+        .page-title{font-size:32px;font-weight:700;background:linear-gradient(45deg,#fff,#aaa);-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center;margin-bottom:30px}
+        .counter-section{width:100%;max-width:500px;text-align:center;margin:20px 0}
+        .counter-label{font-size:12px;color:#666;margin-bottom:8px;letter-spacing:1px}
+        .counter-display{display:flex;justify-content:center;align-items:center;gap:3px;height:50px;background:rgba(61,59,60,0.3);border-radius:10px;border:1px solid #444;padding:0 15px;margin:0 auto;max-width:300px}
+        .digit{font-size:24px;font-weight:bold;color:#fff;min-width:20px;text-align:center;transition:all 0.2s}
+        .digit.new{color:#ff3838;transform:scale(1.3)}
+        .cards-container{display:flex;flex-direction:column;gap:25px;width:100%;max-width:500px;margin-top:20px}
+        .card{background:rgba(61,59,60,0.3);border-radius:15px;border:1px solid #444;padding:20px;transition:all 0.3s ease}
+        .card:hover{transform:translateY(-5px);box-shadow:0 10px 20px rgba(0,0,0,0.3)}
+        .card-image{width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:15px}
+        .card-title{font-size:20px;font-weight:bold;margin-bottom:10px;color:#fff}
+        .card-description{color:#aaa;font-size:14px;line-height:1.5;margin-bottom:20px}
+        .card-btn{height:45px;background:linear-gradient(145deg,#ff3838,#ff5757);color:white;border:none;border-radius:10px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all 0.3s ease;cursor:pointer;width:100%}
+        .card-btn:hover{background:linear-gradient(145deg,#ff5757,#ff3838);transform:translateY(-3px);box-shadow:0 5px 15px rgba(255,56,56,0.3)}
+        .click-counter{text-align:center;margin-top:10px;font-size:12px;color:#888}
+        @media (max-width:480px){.page-title{font-size:24px}.card{padding:15px}.card-image{height:150px}}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background">
+        <video id="background-video" autoplay loop muted playsinline>
+            <source src="fon.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    
+    <button class="sound-toggle" id="soundToggle">
+        <i class="fas fa-volume-up"></i>
+    </button>
+    
+    <h1 class="page-title">Каналы</h1>
+    
+    <div class="counter-section">
+        <div class="counter-label">ПОСЕЩЕНИЙ ЭТОЙ СТРАНИЦЫ:</div>
+        <div class="counter-display" id="pageCounterDisplay">
+            <div class="loading-text">Загрузка...</div>
+        </div>
+    </div>
+    
+    <div class="cards-container">
+        <div class="card">
+            <img src="project1.png" alt="Канал PUBG" class="card-image" onerror="this.style.display='none'">
+            <div class="card-title">PUBG Mobile Моды</div>
+            <div class="card-description">Канал с модами на PUBG Mobile, конфиги и так далее...</div>
+            <button class="card-btn" data-url="https://t.me/+uU4P1t0F3p85YzFi" data-counter="channel_pubg">
+                <i class="fab fa-telegram"></i>
+                <span>Перейти в канал</span>
+            </button>
+            <div class="click-counter" id="counter-channel_pubg">переходов: 0</div>
+        </div>
+        
+        <div class="card">
+            <img src="project2.png" alt="Telegram Premium" class="card-image" onerror="this.style.display='none'">
+            <div class="card-title">Telegram Premium & Stars</div>
+            <div class="card-description">Телеграмм в котором вы можете приобрести Telegram premium, Telegram Stars и арендовать NFT.</div>
+            <button class="card-btn" data-url="https://t.me/DurovChannelStars" data-counter="channel_premium">
+                <i class="fab fa-telegram"></i>
+                <span>Перейти в канал</span>
+            </button>
+            <div class="click-counter" id="counter-channel_premium">переходов: 0</div>
+        </div>
+    </div>
+    
+    <audio id="backgroundMusic" loop>
+        <source src="Top.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const SUPABASE_URL = 'https://gcxujsoqiywkiruzrqdg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVqc29xaXl3a2lydXpycWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5MDY0MDIsImV4cCI6MjA4MTQ4MjQwMn0.B4HCviU2uMbUgtBILaFc5p0V6Pvj-0G8eKS-AEMu8as';
+        
+        let backgroundMusic;
+        let isMusicPlaying = true;
+        let supabaseClient = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Страница каналов загружена');
+            
+            setupMusic();
+            
+            try {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase подключен');
+            } catch (error) {
+                console.error('Ошибка Supabase:', error);
+            }
+            
+            // Увеличиваем счетчик посещений страницы каналов
+            await incrementPageCounter('channels_page_visits');
+            // Загружаем и отображаем счетчик страницы каналов
+            await loadPageCounter('channels_page_visits');
+            
+            // Загружаем счетчики кликов для кнопок
+            await loadClickCounters();
+            
+            setupButtons();
+            
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+            document.addEventListener('dblclick', (e) => e.preventDefault());
+        });
+
+        async function incrementPageCounter(counterId) {
+            try {
+                if (!supabaseClient) return;
+                
+                const sessionKey = `visited_${counterId}`;
+                if (sessionStorage.getItem(sessionKey)) {
+                    console.log(`Страница ${counterId} уже посещалась в этой сессии`);
+                    return;
+                }
+                
+                const { data, error } = await supabaseClient
+                    .from('page_counters')
+                    .select('count')
+                    .eq('id', counterId)
+                    .single();
+                
+                if (error || !data) {
+                    await supabaseClient
+                        .from('page_counters')
+                        .insert({ 
+                            id: counterId, 
+                            page_name: 'Страница каналов',
+                            count: 1 
+                        });
+                    
+                    sessionStorage.setItem(sessionKey, 'true');
+                } else {
+                    const newCount = data.count + 1;
+                    await supabaseClient
+                        .from('page_counters')
+                        .update({ count: newCount })
+                        .eq('id', counterId);
+                    
+                    sessionStorage.setItem(sessionKey, 'true');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка увеличения счетчика страницы:', error);
+            }
+        }
+
+        async function loadPageCounter(counterId) {
+            try {
+                let count = 0;
+                
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('page_counters')
+                        .select('count')
+                        .eq('id', counterId)
+                        .single();
+                    
+                    if (!error && data) {
+                        count = data.count;
+                    } else {
+                        count = getLocalCounter(counterId);
+                    }
+                } else {
+                    count = getLocalCounter(counterId);
+                }
+                
+                displayPageCounter(count);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки счетчика страницы:', error);
+                const count = getLocalCounter(counterId);
+                displayPageCounter(count);
+            }
+        }
+
+        function getLocalCounter(counterId) {
+            let localCount = localStorage.getItem(`fresko_${counterId}`);
+            if (!localCount) {
+                localCount = 0;
+                localStorage.setItem(`fresko_${counterId}`, localCount);
+            }
+            return parseInt(localCount);
+        }
+
+        function displayPageCounter(value) {
+            const counterDisplay = document.getElementById('pageCounterDisplay');
+            if (!counterDisplay) return;
+            
+            counterDisplay.innerHTML = '';
+            
+            const formattedValue = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            const digits = formattedValue.split('');
+            
+            while (digits.length < 3) {
+                digits.unshift('0');
+            }
+            
+            digits.forEach((digit, index) => {
+                const digitElement = document.createElement('div');
+                digitElement.className = 'digit';
+                digitElement.textContent = digit;
+                
+                setTimeout(() => {
+                    digitElement.classList.add('new');
+                    setTimeout(() => {
+                        digitElement.classList.remove('new');
+                    }, 300);
+                }, index * 100);
+                
+                counterDisplay.appendChild(digitElement);
+            });
+        }
+
+        async function loadClickCounters() {
+            const counters = [
+                { id: 'channel_pubg', name: 'PUBG Channel', url: 'https://t.me/+uU4P1t0F3p85YzFi' },
+                { id: 'channel_premium', name: 'Telegram Premium', url: 'https://t.me/DurovChannelStars' }
+            ];
+            
+            for (const counter of counters) {
+                try {
+                    if (supabaseClient) {
+                        const { data, error } = await supabaseClient
+                            .from('click_counters')
+                            .select('click_count')
+                            .eq('id', counter.id)
+                            .single();
+                        
+                        if (error || !data) {
+                            await supabaseClient
+                                .from('click_counters')
+                                .insert({ 
+                                    id: counter.id, 
+                                    name: counter.name,
+                                    url: counter.url,
+                                    click_count: 0 
+                                });
+                            
+                            updateCounterDisplay(counter.id, 0);
+                        } else {
+                            updateCounterDisplay(counter.id, data.click_count);
+                        }
+                    } else {
+                        const localCount = localStorage.getItem(`fresko_${counter.id}_clicks`) || 0;
+                        updateCounterDisplay(counter.id, parseInt(localCount));
+                    }
+                } catch (error) {
+                    console.error('Ошибка загрузки счетчика:', error);
+                    const localCount = localStorage.getItem(`fresko_${counter.id}_clicks`) || 0;
+                    updateCounterDisplay(counter.id, parseInt(localCount));
+                }
+            }
+        }
+
+        function updateCounterDisplay(counterId, count) {
+            const counterElement = document.getElementById(`counter-${counterId}`);
+            if (counterElement) {
+                counterElement.textContent = `переходов: ${count}`;
+            }
+        }
+
+        function setupButtons() {
+            const buttons = document.querySelectorAll('.card-btn');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', async function() {
+                    const url = this.getAttribute('data-url');
+                    const counterId = this.getAttribute('data-counter');
+                    
+                    await incrementClickCounter(counterId, url);
+                    window.open(url, '_blank');
+                });
+            });
+        }
+
+        async function incrementClickCounter(counterId, url) {
+            try {
+                let newCount = 1;
+                
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('click_counters')
+                        .select('click_count')
+                        .eq('id', counterId)
+                        .single();
+                    
+                    if (!error && data) {
+                        newCount = data.click_count + 1;
+                        
+                        await supabaseClient
+                            .from('click_counters')
+                            .update({ 
+                                click_count: newCount,
+                                last_click: new Date().toISOString()
+                            })
+                            .eq('id', counterId);
+                    } else {
+                        await supabaseClient
+                            .from('click_counters')
+                            .insert({ 
+                                id: counterId, 
+                                click_count: 1,
+                                url: url
+                            });
+                    }
+                }
+                
+                const localCount = parseInt(localStorage.getItem(`fresko_${counterId}_clicks`) || 0);
+                newCount = localCount + 1;
+                localStorage.setItem(`fresko_${counterId}_clicks`, newCount);
+                
+                updateCounterDisplay(counterId, newCount);
+                
+            } catch (error) {
+                console.error('Ошибка увеличения счетчика:', error);
+                const localCount = parseInt(localStorage.getItem(`fresko_${counterId}_clicks`) || 0);
+                const newCount = localCount + 1;
+                localStorage.setItem(`fresko_${counterId}_clicks`, newCount);
+                updateCounterDisplay(counterId, newCount);
+            }
+        }
+
+        function setupMusic() {
+            backgroundMusic = document.getElementById('backgroundMusic');
+            const soundToggle = document.getElementById('soundToggle');
+            
+            if (!backgroundMusic) return;
+            
+            backgroundMusic.volume = 0.4;
+            
+            const savedMuted = localStorage.getItem('fresko_music_muted');
+            if (savedMuted === 'true') {
+                backgroundMusic.muted = true;
+                soundToggle.classList.add('muted');
+                isMusicPlaying = false;
+            }
+            
+            const unlockAudio = () => {
+                try {
+                    backgroundMusic.play().catch(e => console.log('Аудио:', e));
+                } catch (e) {}
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            };
+            
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
+            
+            setTimeout(() => {
+                try {
+                    backgroundMusic.play().catch(e => console.log('Автоплей:', e));
+                } catch (e) {}
+            }, 500);
+            
+            soundToggle.addEventListener('click', toggleMusic);
+        }
+
+        function toggleMusic() {
+            if (!backgroundMusic) return;
+            
+            isMusicPlaying = !isMusicPlaying;
+            backgroundMusic.muted = !isMusicPlaying;
+            
+            const soundToggle = document.getElementById('soundToggle');
+            
+            if (isMusicPlaying) {
+                soundToggle.classList.remove('muted');
+                localStorage.setItem('fresko_music_muted', 'false');
+            } else {
+                soundToggle.classList.add('muted');
+                localStorage.setItem('fresko_music_muted', 'true');
+            }
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (backgroundMusic) {
+                backgroundMusic.pause();
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
